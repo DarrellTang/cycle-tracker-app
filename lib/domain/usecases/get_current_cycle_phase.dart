@@ -11,14 +11,16 @@ class GetCurrentCyclePhase {
   /// Returns null if no cycle data exists
   Future<CyclePhase?> call(String profileId) async {
     final latestCycle = await _repository.getLatestCycleByProfileId(profileId);
-    
+
     if (latestCycle == null) {
       return null;
     }
 
     // Calculate current phase based on cycle start date and current date
-    final daysSinceStart = DateTime.now().difference(latestCycle.startDate).inDays;
-    
+    final daysSinceStart = DateTime.now()
+        .difference(latestCycle.startDate)
+        .inDays;
+
     // Simple phase calculation (would be more sophisticated in real implementation)
     if (daysSinceStart <= 5) {
       return CyclePhase.menstrual;

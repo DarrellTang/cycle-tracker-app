@@ -40,15 +40,18 @@ class HomeScreen extends ConsumerWidget {
                   child: const Text('Profile'),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, Routes.cycleDetails),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, Routes.cycleDetails),
                   child: const Text('Cycle Details'),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, Routes.settings),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, Routes.settings),
                   child: const Text('Settings'),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/invalid-route'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/invalid-route'),
                   child: const Text('404 Test'),
                 ),
               ],

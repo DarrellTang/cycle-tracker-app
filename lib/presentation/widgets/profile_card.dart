@@ -66,8 +66,8 @@ class ProfileCard extends StatelessWidget {
                 Text(
                   'Last Period: ${DateFormat('MMM dd, yyyy').format(lastPeriodDate!)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ],

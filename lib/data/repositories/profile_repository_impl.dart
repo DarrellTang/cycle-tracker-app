@@ -38,7 +38,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Profile> createProfile(Profile profile) async {
     final db = await LocalDatabase.database;
     final model = ProfileModel.fromEntity(profile);
-    
+
     await db.insert(
       LocalDatabase.profilesTable,
       model.toJson(),
@@ -51,9 +51,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Profile> updateProfile(Profile profile) async {
     final db = await LocalDatabase.database;
-    final model = ProfileModel.fromEntity(profile.copyWith(
-      updatedAt: DateTime.now(),
-    ));
+    final model = ProfileModel.fromEntity(
+      profile.copyWith(updatedAt: DateTime.now()),
+    );
 
     await db.update(
       LocalDatabase.profilesTable,

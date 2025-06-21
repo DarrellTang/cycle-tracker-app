@@ -7,20 +7,22 @@ class CycleCalculator {
   /// Calculate the current cycle phase based on start date
   static CyclePhase calculateCurrentPhase(DateTime cycleStartDate) {
     final daysSinceStart = DateTime.now().difference(cycleStartDate).inDays;
-    
+
     if (daysSinceStart < 0) {
       // Future start date, shouldn't happen but handle gracefully
       return CyclePhase.menstrual;
     }
-    
+
     if (daysSinceStart < AppConstants.menstrualPhaseDuration) {
       return CyclePhase.menstrual;
-    } else if (daysSinceStart < AppConstants.menstrualPhaseDuration + 
-                                  AppConstants.follicularPhaseDuration) {
+    } else if (daysSinceStart <
+        AppConstants.menstrualPhaseDuration +
+            AppConstants.follicularPhaseDuration) {
       return CyclePhase.follicular;
-    } else if (daysSinceStart < AppConstants.menstrualPhaseDuration + 
-                                  AppConstants.follicularPhaseDuration + 
-                                  AppConstants.ovulationPhaseDuration) {
+    } else if (daysSinceStart <
+        AppConstants.menstrualPhaseDuration +
+            AppConstants.follicularPhaseDuration +
+            AppConstants.ovulationPhaseDuration) {
       return CyclePhase.ovulation;
     } else {
       return CyclePhase.luteal;
@@ -41,7 +43,7 @@ class CycleCalculator {
 
     // Calculate average cycle length from recent cycles
     int averageCycleLength = AppConstants.defaultCycleLength;
-    
+
     if (sortedCycles.length > 1) {
       final recentCycles = sortedCycles.take(6).toList(); // Use last 6 cycles
       int totalLength = 0;
@@ -50,10 +52,12 @@ class CycleCalculator {
       for (int i = 0; i < recentCycles.length - 1; i++) {
         final current = recentCycles[i];
         final previous = recentCycles[i + 1];
-        final cycleLength = current.startDate.difference(previous.startDate).inDays;
-        
+        final cycleLength = current.startDate
+            .difference(previous.startDate)
+            .inDays;
+
         // Only use reasonable cycle lengths
-        if (cycleLength >= AppConstants.minCycleLength && 
+        if (cycleLength >= AppConstants.minCycleLength &&
             cycleLength <= AppConstants.maxCycleLength) {
           totalLength += cycleLength;
           count++;
@@ -76,54 +80,70 @@ class CycleCalculator {
   }
 
   /// Get estimated ovulation date for a cycle
-  static DateTime getEstimatedOvulationDate(DateTime cycleStartDate, {
+  static DateTime getEstimatedOvulationDate(
+    DateTime cycleStartDate, {
     int cycleLength = AppConstants.defaultCycleLength,
   }) {
     // Ovulation typically occurs 14 days before the next period
     const ovulationDaysBeforeNextPeriod = 14;
     final ovulationDay = cycleLength - ovulationDaysBeforeNextPeriod;
-    return cycleStartDate.add(Duration(days: ovulationDay - 1)); // -1 because day 1 is start
+    return cycleStartDate.add(
+      Duration(days: ovulationDay - 1),
+    ); // -1 because day 1 is start
   }
 
   /// Get fertile window (5-day window around ovulation)
-  static List<DateTime> getFertileWindow(DateTime cycleStartDate, {
+  static List<DateTime> getFertileWindow(
+    DateTime cycleStartDate, {
     int cycleLength = AppConstants.defaultCycleLength,
   }) {
-    final ovulationDate = getEstimatedOvulationDate(cycleStartDate, cycleLength: cycleLength);
+    final ovulationDate = getEstimatedOvulationDate(
+      cycleStartDate,
+      cycleLength: cycleLength,
+    );
     final fertileStart = ovulationDate.subtract(const Duration(days: 2));
     final fertileEnd = ovulationDate.add(const Duration(days: 2));
-    
+
     final fertileWindow = <DateTime>[];
-    for (var date = fertileStart; date.isBefore(fertileEnd.add(const Duration(days: 1))); 
-         date = date.add(const Duration(days: 1))) {
+    for (
+      var date = fertileStart;
+      date.isBefore(fertileEnd.add(const Duration(days: 1)));
+      date = date.add(const Duration(days: 1))
+    ) {
       fertileWindow.add(date);
     }
-    
+
     return fertileWindow;
   }
 
   /// Check if a date falls within the fertile window
-  static bool isInFertileWindow(DateTime date, DateTime cycleStartDate, {
+  static bool isInFertileWindow(
+    DateTime date,
+    DateTime cycleStartDate, {
     int cycleLength = AppConstants.defaultCycleLength,
   }) {
-    final fertileWindow = getFertileWindow(cycleStartDate, cycleLength: cycleLength);
-    return fertileWindow.any((fertileDate) => 
-      date.year == fertileDate.year && 
-      date.month == fertileDate.month && 
-      date.day == fertileDate.day
+    final fertileWindow = getFertileWindow(
+      cycleStartDate,
+      cycleLength: cycleLength,
+    );
+    return fertileWindow.any(
+      (fertileDate) =>
+          date.year == fertileDate.year &&
+          date.month == fertileDate.month &&
+          date.day == fertileDate.day,
     );
   }
 
   /// Validate cycle length
   static bool isValidCycleLength(int cycleLength) {
-    return cycleLength >= AppConstants.minCycleLength && 
-           cycleLength <= AppConstants.maxCycleLength;
+    return cycleLength >= AppConstants.minCycleLength &&
+        cycleLength <= AppConstants.maxCycleLength;
   }
 
   /// Validate period length
   static bool isValidPeriodLength(int periodLength) {
-    return periodLength >= AppConstants.minPeriodLength && 
-           periodLength <= AppConstants.maxPeriodLength;
+    return periodLength >= AppConstants.minPeriodLength &&
+        periodLength <= AppConstants.maxPeriodLength;
   }
 
   /// Get phase color for UI display

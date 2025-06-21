@@ -23,27 +23,21 @@ class AppRouter {
       case Routes.profile:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Profile Screen - Coming Soon'),
-            ),
+            body: Center(child: Text('Profile Screen - Coming Soon')),
           ),
           settings: settings,
         );
       case Routes.cycleDetails:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Cycle Details Screen - Coming Soon'),
-            ),
+            body: Center(child: Text('Cycle Details Screen - Coming Soon')),
           ),
           settings: settings,
         );
       case Routes.settings:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Settings Screen - Coming Soon'),
-            ),
+            body: Center(child: Text('Settings Screen - Coming Soon')),
           ),
           settings: settings,
         );

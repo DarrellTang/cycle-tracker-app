@@ -1,6 +1,6 @@
 import 'package:cycle_tracker_app/dependencies.dart';
-import 'package:cycle_tracker_app/presentation/screens/home_screen.dart';
 import 'package:cycle_tracker_app/core/constants/app_constants.dart';
+import 'package:cycle_tracker_app/core/router.dart';
 
 void main() {
   runApp(const ProviderScope(child: CycleTrackerApp()));
@@ -26,7 +26,8 @@ class CycleTrackerApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomeScreen(),
+      onGenerateRoute: AppRouter.generateRoute,
+      initialRoute: Routes.home,
     );
   }
 }

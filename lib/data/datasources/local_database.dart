@@ -69,7 +69,11 @@ class LocalDatabase {
   }
 
   /// Handle database upgrades
-  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  static Future<void> _onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
     // Handle database schema migrations here in future versions
   }
 

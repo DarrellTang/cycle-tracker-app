@@ -4,10 +4,11 @@ import 'package:cycle_tracker_app/domain/usecases/get_all_profiles.dart';
 import 'package:cycle_tracker_app/core/providers/usecase_providers.dart';
 
 /// State provider for managing profiles list
-final profilesProvider = StateNotifierProvider<ProfilesNotifier, AsyncValue<List<Profile>>>((ref) {
-  final getAllProfiles = ref.read(getAllProfilesProvider);
-  return ProfilesNotifier(getAllProfiles);
-});
+final profilesProvider =
+    StateNotifierProvider<ProfilesNotifier, AsyncValue<List<Profile>>>((ref) {
+      final getAllProfiles = ref.read(getAllProfilesProvider);
+      return ProfilesNotifier(getAllProfiles);
+    });
 
 /// State notifier for managing profiles
 class ProfilesNotifier extends StateNotifier<AsyncValue<List<Profile>>> {

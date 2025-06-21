@@ -49,6 +49,23 @@ flutter test                      # Run unit tests
 flutter analyze                   # Static analysis
 flutter test --coverage          # Run tests with coverage
 
+# CI/CD Pipeline
+## Current Status: Lightweight CI for Early Development
+The GitHub Actions workflow (.github/workflows/flutter-ci.yml) is currently simplified for early development:
+- ✅ Code formatting verification (dart format)
+- ✅ Static analysis (flutter analyze)
+- ✅ Unit test execution (flutter test)
+- ❌ Build artifacts (APK/iOS) - Disabled for faster CI
+- ❌ Coverage reporting - Disabled for faster CI
+
+## TODO: Enhanced CI for Production
+When ready for production deployment, the CI should be enhanced to include:
+- APK build and artifact upload for Android testing
+- iOS build for multi-platform validation
+- Coverage reporting with Codecov integration
+- Deployment to Firebase App Distribution or similar
+- Build status badges in README
+
 # Building
 flutter build apk                 # Build Android APK
 flutter build ios                # Build iOS app

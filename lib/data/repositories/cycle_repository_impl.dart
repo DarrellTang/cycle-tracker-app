@@ -16,7 +16,9 @@ class CycleRepositoryImpl implements CycleRepository {
       orderBy: 'start_date DESC',
     );
 
-    return maps.map((map) => CycleRecordModel.fromJson(map).toEntity()).toList();
+    return maps
+        .map((map) => CycleRecordModel.fromJson(map).toEntity())
+        .toList();
   }
 
   @override
@@ -58,7 +60,7 @@ class CycleRepositoryImpl implements CycleRepository {
   Future<CycleRecord> createCycle(CycleRecord cycle) async {
     final db = await LocalDatabase.database;
     final model = CycleRecordModel.fromEntity(cycle);
-    
+
     await db.insert(
       LocalDatabase.cyclesTable,
       model.toJson(),
@@ -71,9 +73,9 @@ class CycleRepositoryImpl implements CycleRepository {
   @override
   Future<CycleRecord> updateCycle(CycleRecord cycle) async {
     final db = await LocalDatabase.database;
-    final model = CycleRecordModel.fromEntity(cycle.copyWith(
-      updatedAt: DateTime.now(),
-    ));
+    final model = CycleRecordModel.fromEntity(
+      cycle.copyWith(updatedAt: DateTime.now()),
+    );
 
     await db.update(
       LocalDatabase.cyclesTable,
@@ -113,6 +115,8 @@ class CycleRepositoryImpl implements CycleRepository {
       orderBy: 'start_date DESC',
     );
 
-    return maps.map((map) => CycleRecordModel.fromJson(map).toEntity()).toList();
+    return maps
+        .map((map) => CycleRecordModel.fromJson(map).toEntity())
+        .toList();
   }
 }

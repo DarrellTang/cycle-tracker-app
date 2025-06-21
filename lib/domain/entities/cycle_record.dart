@@ -51,16 +51,16 @@ class CycleRecord extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        profileId,
-        startDate,
-        endDate,
-        cycleLength,
-        periodLength,
-        currentPhase,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    profileId,
+    startDate,
+    endDate,
+    cycleLength,
+    periodLength,
+    currentPhase,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 /// Enum representing different phases of a menstrual cycle

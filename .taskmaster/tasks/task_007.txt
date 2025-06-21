@@ -1,0 +1,66 @@
+# Task ID: 7
+# Title: Predictive Calendar Algorithm
+# Status: pending
+# Dependencies: 4, 5, 6
+# Priority: high
+# Description: Implement the predictive algorithm that forecasts cycle phases, symptoms, and energy levels for the next 3 months based on historical data.
+# Details:
+1. Create PredictionEngine class using simple moving average of last 3-6 cycles
+2. Implement algorithms for:
+   - Cycle length prediction
+   - Phase duration forecasting
+   - Symptom pattern recognition
+   - Energy level forecasting
+   - Mood sensitivity prediction
+3. Design 3-month forward view calendar
+4. Implement color-coding for predicted days
+5. Add confidence indicators for predictions
+6. Create "high support needed" day markers
+7. Allow manual adjustment of predictions
+8. Implement prediction accuracy tracking
+
+# Test Strategy:
+1. Unit tests for prediction algorithms
+2. Test with various historical data patterns
+3. Verify prediction accuracy against known outcomes
+4. Test edge cases (irregular cycles, missing data)
+5. Integration tests for prediction visualization
+6. Performance testing with large datasets
+
+# Subtasks:
+## 1. Implement Basic Cycle Averaging [pending]
+### Dependencies: None
+### Description: Create a simple algorithm that calculates the average length of past cycles to predict future dates
+### Details:
+Calculate the mean of the last 3-6 cycles to establish a baseline prediction. Use simple calendar math to add the average cycle length to the last recorded cycle start date. Include handling for when there are fewer than 3 cycles recorded.
+
+## 2. Develop Weighted Recent Cycle Algorithm [pending]
+### Dependencies: 7.1
+### Description: Enhance prediction by giving more weight to recent cycles than older ones
+### Details:
+Implement a weighted average where the most recent cycle has the highest weight (e.g., 0.5), the second most recent has less (e.g., 0.3), and so on. This accounts for recent trends in the user's cycle patterns without requiring complex ML.
+
+## 3. Create Simple Visualization of Predictions [pending]
+### Dependencies: 7.1, 7.2
+### Description: Develop calendar view highlighting predicted cycle start dates and fertile windows
+### Details:
+Use the prediction algorithm to mark future dates on a calendar. Show predicted cycle start dates with one color and estimated fertile windows (typically 5 days before ovulation plus ovulation day) with another color. Include a simple timeline view option.
+
+## 4. Implement Confidence Indicators [pending]
+### Dependencies: 7.2, 7.3
+### Description: Add visual indicators showing prediction confidence based on data consistency
+### Details:
+Calculate the standard deviation of past cycle lengths. Use this to create a simple confidence score: low variance = high confidence, high variance = low confidence. Display this as color coding or simple indicators (high/medium/low) on the predicted dates.
+
+## 5. Add Manual Adjustment Features [pending]
+### Dependencies: 7.3, 7.4
+### Description: Allow users to manually adjust predictions based on their knowledge
+### Details:
+Create a simple interface for users to drag/adjust predicted dates. Include options to mark certain predictions as 'confirmed' by the user. Store both the algorithm's prediction and user adjustments separately to improve future predictions.
+
+## 6. Implement Prediction Accuracy Tracking [pending]
+### Dependencies: 7.5
+### Description: Develop a system to track how accurate past predictions were compared to actual dates
+### Details:
+When a user logs an actual cycle start date, compare it to the predicted date. Calculate the difference in days and maintain a running average of prediction accuracy. Display this information to users and use it to potentially adjust the confidence indicators.
+

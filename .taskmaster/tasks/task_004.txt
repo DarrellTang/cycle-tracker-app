@@ -1,0 +1,99 @@
+# Task ID: 4
+# Title: Cycle Tracking Calendar Implementation
+# Status: pending
+# Dependencies: 2, 3
+# Priority: high
+# Description: Develop the calendar-based tracking interface with visual phase indicators and the ability to log period start/end dates.
+# Details:
+1. Integrate table_calendar package
+2. Create custom calendar day builders to show:
+   - Phase colors (Menstrual, Follicular, Ovulation, Luteal)
+   - Period days with special indicators
+   - Current day highlight
+   - Predicted vs. actual days
+3. Implement gesture handling for date selection
+4. Create period logging interface:
+   - Start/end date selection
+   - Flow intensity tracking
+   - Notes field
+5. Implement cycle calculation logic based on logged periods
+6. Add month navigation and 3-month forward view
+7. Create cycle history visualization
+8. Implement phase transition calculations
+
+# Test Strategy:
+1. Widget tests for calendar rendering
+2. Unit tests for cycle calculation logic
+3. Integration tests for period logging workflow
+4. Test edge cases (irregular cycles, missing data)
+5. Verify phase visualization accuracy
+6. Test calendar navigation and date selection
+
+# Subtasks:
+## 1. Set up table_calendar package and basic calendar integration [pending]
+### Dependencies: None
+### Description: Initialize and configure the table_calendar package to display a functional calendar in the app
+### Details:
+1. Add table_calendar dependency to pubspec.yaml
+2. Create a CalendarScreen widget with TableCalendar implementation
+3. Configure basic calendar parameters (firstDay, lastDay, focusedDay)
+4. Implement calendar format toggle (month, 2-week, week views)
+5. Set up calendar styling with app theme colors
+6. Add navigation to the calendar screen from the main menu
+7. Test basic calendar functionality (month navigation, format switching)
+
+## 2. Implement period logging interface [pending]
+### Dependencies: 4.1
+### Description: Create UI components for users to log period start/end dates and symptoms
+### Details:
+1. Design a period logging bottom sheet or dialog
+2. Create form fields for period start date, flow intensity, and symptoms
+3. Implement date selection directly from calendar or via date picker
+4. Add symptom tracking options (cramps, headache, mood changes, etc.)
+5. Create a PeriodEntry model class to store period data
+6. Implement form validation for period entries
+7. Add save functionality to store period data in local database
+8. Create edit/delete options for existing period entries
+
+## 3. Develop cycle calculation logic [pending]
+### Dependencies: 4.2
+### Description: Implement algorithms to calculate cycle phases, predictions, and fertility windows
+### Details:
+1. Create a CycleCalculator class to handle cycle logic
+2. Implement methods to calculate average cycle length from historical data
+3. Develop algorithms to determine current cycle phase (menstrual, follicular, ovulation, luteal)
+4. Add prediction logic for upcoming periods based on historical data
+5. Implement fertility window calculation
+6. Create methods to determine cycle day number
+7. Add statistical analysis for cycle regularity and variation
+8. Implement notification triggers for upcoming cycle events
+9. Write unit tests for calculation accuracy
+
+## 4. Create custom calendar visualization for cycle data [pending]
+### Dependencies: 4.1, 4.3
+### Description: Customize the calendar UI to visually represent cycle phases, period days, and predictions
+### Details:
+1. Extend TableCalendar with custom builders for day cells
+2. Implement custom markers for different cycle phases
+3. Create color coding system for different cycle states (period, fertile, ovulation)
+4. Add visual indicators for period intensity levels
+5. Implement predicted period days with distinct styling
+6. Create a legend explaining calendar markings
+7. Add animations for phase transitions
+8. Implement today indicator with current phase information
+9. Optimize rendering performance for smooth scrolling
+
+## 5. Implement cycle history visualization and statistics [pending]
+### Dependencies: 4.3, 4.4
+### Description: Create screens to display historical cycle data, patterns, and statistics
+### Details:
+1. Design a cycle history screen with monthly summaries
+2. Create graphical representations of cycle length over time
+3. Implement statistics panel showing average cycle length, variation, and regularity
+4. Add symptom frequency analysis and correlation visualization
+5. Create exportable cycle reports (PDF or CSV)
+6. Implement filtering options for historical data
+7. Add cycle comparison functionality between different time periods
+8. Create data migration tools for importing from other period tracking apps
+9. Implement data backup and restore functionality
+

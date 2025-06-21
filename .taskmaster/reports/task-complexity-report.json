@@ -1,0 +1,133 @@
+{
+	"meta": {
+		"generatedAt": "2025-06-20T23:32:45.249Z",
+		"tasksAnalyzed": 15,
+		"totalTasks": 15,
+		"analysisCount": 15,
+		"thresholdScore": 3,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Flutter Project Setup & Architecture",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Flutter Project Setup & Architecture task into 5 subtasks, focusing on project initialization, dependency configuration, architecture implementation, navigation setup, and CI/CD pipeline configuration.",
+			"reasoning": "This task involves setting up the entire project foundation with clean architecture principles, multiple dependencies, and CI/CD configuration. It requires architectural knowledge and technical decisions that will impact the entire project."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Database Schema Design & Implementation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the Database Schema Design & Implementation task into 6 subtasks, focusing on schema design, SQLite implementation, encryption, repository pattern implementation, migration strategy, and query optimization.",
+			"reasoning": "This task involves complex database design with multiple related entities, encryption requirements, and a repository pattern implementation. The database structure will be foundational to the entire application and requires careful planning."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Profile Management System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the Profile Management System task into 4 subtasks, focusing on profile data model implementation, profile CRUD operations, UI for profile management, and profile switching mechanism.",
+			"reasoning": "This task requires implementing a complete profile management system with CRUD operations, UI components, and data isolation. It's moderately complex but more straightforward than the architectural or database tasks."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Cycle Tracking Calendar Implementation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Cycle Tracking Calendar Implementation task into 5 subtasks, focusing on calendar integration, custom calendar visualization, period logging interface, cycle calculation logic, and history visualization.",
+			"reasoning": "This task involves complex UI customization of a calendar component with custom rendering for different phases, along with the implementation of cycle calculation logic. It combines UI challenges with business logic complexity."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Phase-Based Insights Engine",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Phase-Based Insights Engine task into 5 subtasks, focusing on phase calculation algorithms, phase duration customization, phase history analysis, phase visualization components, and phase transition predictions.",
+			"reasoning": "This task involves complex algorithms for calculating cycle phases, predictions, and transitions. It requires deep domain knowledge about menstrual cycles and sophisticated calculation logic to handle irregular patterns."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Symptom Tracking System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Symptom Tracking System task into 5 subtasks, focusing on symptom data models, symptom logging interface, symptom visualization, pattern recognition, and quick-entry implementation.",
+			"reasoning": "This task combines data modeling, UI design for intuitive logging, and complex visualization of symptom patterns. The pattern recognition component adds significant complexity to what would otherwise be a standard CRUD feature."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Predictive Calendar Algorithm",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the Predictive Calendar Algorithm task into 6 subtasks, focusing on prediction engine implementation, cycle forecasting algorithms, visualization of predictions, confidence indicators, manual adjustment features, and prediction accuracy tracking.",
+			"reasoning": "This is one of the most complex tasks, requiring sophisticated algorithms for predicting future cycles based on historical data. It involves statistical analysis, pattern recognition, and handling of irregular data patterns, plus visualization of confidence levels."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Daily Observation Logging",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the Daily Observation Logging task into 4 subtasks, focusing on quick-entry interface design, observation data model implementation, history view creation, and reminder system implementation.",
+			"reasoning": "This task is relatively straightforward compared to others, involving standard form design, data storage, and retrieval. The reminder system adds some complexity but overall this is a moderate complexity feature."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Support Suggestions System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the Support Suggestions System task into 4 subtasks, focusing on suggestion database creation, suggestion engine implementation, phase-specific UI components, and user interaction features.",
+			"reasoning": "This task involves creating a content database and algorithms to select relevant suggestions based on the current phase. It's moderately complex due to the need for phase-appropriate content selection and presentation."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Notification System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Notification System task into 5 subtasks, focusing on notification service implementation, notification types and content, settings UI, scheduling logic, and platform-specific notification handling.",
+			"reasoning": "Implementing notifications requires handling platform-specific APIs, scheduling based on predictions, and managing user preferences. The complexity comes from coordinating with the prediction engine and handling different notification types."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Privacy & Security Implementation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Privacy & Security Implementation task into 5 subtasks, focusing on biometric authentication, database encryption, privacy settings UI, secure data operations, and security audit implementation.",
+			"reasoning": "Security features require careful implementation and testing. This task involves biometric authentication, encryption, secure data handling, and ensuring no data leakage. The security implications make this a high-complexity task."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Dashboard & Home Screen",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Dashboard & Home Screen task into 5 subtasks, focusing on home screen layout design, profile card implementation, at-a-glance widgets, quick actions, and dashboard customization features.",
+			"reasoning": "The dashboard needs to present complex information in an intuitive way, with multiple interactive components and real-time updates. It integrates data from many other components, adding to its complexity."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Phase-Specific Feature Implementation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Phase-Specific Feature Implementation task into 5 subtasks, focusing on phase-specific tracking interfaces, support suggestion integration, educational content creation, symptom tracking specialization, and phase comparison features.",
+			"reasoning": "This task requires implementing different interfaces and features for each cycle phase, with specialized tracking and support content. The domain knowledge required and the need to create four different but cohesive experiences adds complexity."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Data Export & Backup",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the Data Export & Backup task into 4 subtasks, focusing on secure export implementation, backup creation and restoration, encryption features, and backup management interface.",
+			"reasoning": "This task involves implementing secure data export and backup functionality with encryption. While technically challenging, it's more isolated from other features and follows established patterns for data export and backup."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Testing, Polishing & Documentation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the Testing, Polishing & Documentation task into 6 subtasks, focusing on comprehensive test suite creation, usability testing, documentation development, accessibility improvements, security audit, and performance optimization.",
+			"reasoning": "This task encompasses comprehensive testing across multiple dimensions, documentation creation, and final polishing. It touches every part of the application and requires thorough verification of all features, making it highly complex and time-consuming."
+		}
+	]
+}

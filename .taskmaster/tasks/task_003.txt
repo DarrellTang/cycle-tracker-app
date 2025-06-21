@@ -1,0 +1,1664 @@
+# Task ID: 3
+# Title: Profile Management System
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Implement the multi-profile management system allowing users to create, edit, and switch between profiles for different family members.
+# Details:
+1. Create Profile entity class with properties:
+   - id, name, photo, color, birthdate
+   - cycle length, phase durations
+   - privacy settings
+   - tracking preferences
+2. Implement ProfileRepository for CRUD operations
+3. Design UI for profile creation/editing:
+   - Profile photo selection/capture
+   - Color picker for profile color coding
+   - Form for personal details
+   - Cycle length configuration
+4. Create profile list view with color coding and photos
+5. Implement profile switching mechanism
+6. Add profile-specific settings page
+7. Create profile deletion with confirmation dialog
+8. Implement profile data isolation
+
+# Test Strategy:
+1. Unit tests for ProfileRepository
+2. Widget tests for profile creation/editing forms
+3. Integration tests for profile switching
+4. Verify profile data isolation
+5. Test profile deletion and data cleanup
+6. Usability testing for profile management workflow
+
+# Subtasks:
+## 1. Implement Profile Data Model [pending]
+### Dependencies: None
+### Description: Create the data model for user profiles with all necessary fields and serialization methods
+### Details:
+1. Create a `Profile` class in `lib/models/profile.dart`:
+```dart
+class Profile {
+  final String id;
+  final String name;
+  final String email;
+  final String photoUrl;
+  final Map<String, dynamic> preferences;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  Profile({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.photoUrl = '',
+    this.preferences = const {},
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) : 
+    this.createdAt = createdAt ?? DateTime.now(),
+    this.updatedAt = updatedAt ?? DateTime.now();
+
+  // Convert Profile to Map for storage
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'photoUrl': photoUrl,
+      'preferences': preferences,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  // Create Profile from Map
+  factory Profile.fromMap(Map<String, dynamic> map) {
+    return Profile(
+      id: map['id'],
+      name: map['name'],
+      email: map['email'],
+      photoUrl: map['photoUrl'] ?? '',
+      preferences: map['preferences'] ?? {},
+      createdAt: DateTime.parse(map['createdAt']),
+      updatedAt: DateTime.parse(map['updatedAt']),
+    );
+  }
+
+  // Create copy of Profile with some fields changed
+  Profile copyWith({
+    String? name,
+    String? email,
+    String? photoUrl,
+    Map<String, dynamic>? preferences,
+  }) {
+    return Profile(
+      id: this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      preferences: preferences ?? this.preferences,
+      createdAt: this.createdAt,
+      updatedAt: DateTime.now(),
+    );
+  }
+}
+```
+
+## 2. Implement Profile CRUD Operations [pending]
+### Dependencies: 3.1
+### Description: Create a service class to handle all profile operations including create, read, update, delete, and profile switching
+### Details:
+1. Create a `ProfileService` class in `lib/services/profile_service.dart`:
+```dart
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import '../models/profile.dart';
+import 'package:uuid/uuid.dart';
+
+class ProfileService {
+  static const String PROFILES_KEY = 'user_profiles';
+  static const String ACTIVE_PROFILE_KEY = 'active_profile_id';
+  
+  // Get all profiles
+  Future<List<Profile>> getAllProfiles() async {
+    final prefs = await SharedPreferences.getInstance();
+    final profilesJson = prefs.getStringList(PROFILES_KEY) ?? [];
+    
+    return profilesJson
+        .map((json) => Profile.fromMap(jsonDecode(json)))
+        .toList();
+  }
+  
+  // Get active profile
+  Future<Profile?> getActiveProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final activeId = prefs.getString(ACTIVE_PROFILE_KEY);
+    
+    if (activeId == null) return null;
+    
+    final profiles = await getAllProfiles();
+    return profiles.firstWhere(
+      (profile) => profile.id == activeId,
+      orElse: () => null,
+    );
+  }
+  
+  // Create new profile
+  Future<Profile> createProfile(String name, String email, {String photoUrl = ''}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profiles = await getAllProfiles();
+    
+    final newProfile = Profile(
+      id: Uuid().v4(),
+      name: name,
+      email: email,
+      photoUrl: photoUrl,
+    );
+    
+    profiles.add(newProfile);
+    await _saveProfiles(profiles);
+    
+    // If this is the first profile, make it active
+    if (profiles.length == 1) {
+      await setActiveProfile(newProfile.id);
+    }
+    
+    return newProfile;
+  }
+  
+  // Update profile
+  Future<Profile> updateProfile(Profile profile) async {
+    final profiles = await getAllProfiles();
+    final index = profiles.indexWhere((p) => p.id == profile.id);
+    
+    if (index >= 0) {
+      profiles[index] = profile.copyWith(
+        updatedAt: DateTime.now(),
+      );
+      await _saveProfiles(profiles);
+      return profiles[index];
+    }
+    
+    throw Exception('Profile not found');
+  }
+  
+  // Delete profile
+  Future<void> deleteProfile(String profileId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profiles = await getAllProfiles();
+    final activeId = prefs.getString(ACTIVE_PROFILE_KEY);
+    
+    profiles.removeWhere((profile) => profile.id == profileId);
+    await _saveProfiles(profiles);
+    
+    // If active profile was deleted, set a new active profile
+    if (activeId == profileId && profiles.isNotEmpty) {
+      await setActiveProfile(profiles.first.id);
+    } else if (profiles.isEmpty) {
+      await prefs.remove(ACTIVE_PROFILE_KEY);
+    }
+  }
+  
+  // Set active profile
+  Future<void> setActiveProfile(String profileId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(ACTIVE_PROFILE_KEY, profileId);
+  }
+  
+  // Helper to save profiles to storage
+  Future<void> _saveProfiles(List<Profile> profiles) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profilesJson = profiles
+        .map((profile) => jsonEncode(profile.toMap()))
+        .toList();
+    
+    await prefs.setStringList(PROFILES_KEY, profilesJson);
+  }
+}
+```
+
+2. Add dependencies to pubspec.yaml:
+```yaml
+dependencies:
+  shared_preferences: ^2.0.15
+  uuid: ^3.0.6
+```
+
+## 3. Create UI for Profile Management [pending]
+### Dependencies: 3.1, 3.2
+### Description: Implement the user interface for profile management including profile list, creation, editing, and deletion screens
+### Details:
+1. Create a profile list screen in `lib/screens/profile_list_screen.dart`:
+```dart
+import 'package:flutter/material.dart';
+import '../models/profile.dart';
+import '../services/profile_service.dart';
+import 'profile_edit_screen.dart';
+
+class ProfileListScreen extends StatefulWidget {
+  @override
+  _ProfileListScreenState createState() => _ProfileListScreenState();
+}
+
+class _ProfileListScreenState extends State<ProfileListScreen> {
+  final ProfileService _profileService = ProfileService();
+  List<Profile> _profiles = [];
+  String? _activeProfileId;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfiles();
+  }
+
+  Future<void> _loadProfiles() async {
+    setState(() => _isLoading = true);
+    try {
+      final profiles = await _profileService.getAllProfiles();
+      final activeProfile = await _profileService.getActiveProfile();
+      
+      setState(() {
+        _profiles = profiles;
+        _activeProfileId = activeProfile?.id;
+        _isLoading = false;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading profiles: $e')),
+      );
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _setActiveProfile(String profileId) async {
+    try {
+      await _profileService.setActiveProfile(profileId);
+      setState(() => _activeProfileId = profileId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile activated')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error activating profile: $e')),
+      );
+    }
+  }
+
+  Future<void> _deleteProfile(Profile profile) async {
+    try {
+      await _profileService.deleteProfile(profile.id);
+      await _loadProfiles();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting profile: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profiles'),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _profiles.isEmpty
+              ? Center(child: Text('No profiles yet. Create one!'))
+              : ListView.builder(
+                  itemCount: _profiles.length,
+                  itemBuilder: (context, index) {
+                    final profile = _profiles[index];
+                    final isActive = profile.id == _activeProfileId;
+                    
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: profile.photoUrl.isNotEmpty
+                            ? NetworkImage(profile.photoUrl)
+                            : null,
+                        child: profile.photoUrl.isEmpty
+                            ? Text(profile.name[0])
+                            : null,
+                      ),
+                      title: Text(profile.name),
+                      subtitle: Text(profile.email),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isActive)
+                            Chip(
+                              label: Text('Active'),
+                              backgroundColor: Colors.green[100],
+                            )
+                          else
+                            TextButton(
+                              onPressed: () => _setActiveProfile(profile.id),
+                              child: Text('Activate'),
+                            ),
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileEditScreen(
+                                    profile: profile,
+                                  ),
+                                ),
+                              );
+                              _loadProfiles();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Delete Profile'),
+                                content: Text(
+                                    'Are you sure you want to delete ${profile.name}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _deleteProfile(profile);
+                                    },
+                                    child: Text('Delete'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileEditScreen(),
+            ),
+          );
+          _loadProfiles();
+        },
+        child: Icon(Icons.add),
+        tooltip: 'Add Profile',
+      ),
+    );
+  }
+}
+```
+
+2. Create a profile edit screen in `lib/screens/profile_edit_screen.dart`:
+```dart
+import 'package:flutter/material.dart';
+import '../models/profile.dart';
+import '../services/profile_service.dart';
+
+class ProfileEditScreen extends StatefulWidget {
+  final Profile? profile;
+
+  ProfileEditScreen({this.profile});
+
+  @override
+  _ProfileEditScreenState createState() => _ProfileEditScreenState();
+}
+
+class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _photoUrlController = TextEditingController();
+  final ProfileService _profileService = ProfileService();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.profile != null) {
+      _nameController.text = widget.profile!.name;
+      _emailController.text = widget.profile!.email;
+      _photoUrlController.text = widget.profile!.photoUrl;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _photoUrlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      if (widget.profile == null) {
+        // Create new profile
+        await _profileService.createProfile(
+          _nameController.text,
+          _emailController.text,
+          photoUrl: _photoUrlController.text,
+        );
+      } else {
+        // Update existing profile
+        final updatedProfile = widget.profile!.copyWith(
+          name: _nameController.text,
+          email: _emailController.text,
+          photoUrl: _photoUrlController.text,
+        );
+        await _profileService.updateProfile(updatedProfile);
+      }
+
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving profile: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.profile == null ? 'Create Profile' : 'Edit Profile'),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    if (_photoUrlController.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(_photoUrlController.text),
+                        ),
+                      ),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an email';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _photoUrlController,
+                      decoration: InputDecoration(
+                        labelText: 'Photo URL (optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: _saveProfile,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          'Save Profile',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+}
+```
+
+## 4. Implement Profile Switching Mechanism [pending]
+### Dependencies: 3.1, 3.2, 3.3
+### Description: Create a provider for profile state management and implement the profile switching functionality throughout the app
+### Details:
+1. Create a profile provider in `lib/providers/profile_provider.dart`:
+```dart
+import 'package:flutter/foundation.dart';
+import '../models/profile.dart';
+import '../services/profile_service.dart';
+
+class ProfileProvider extends ChangeNotifier {
+  final ProfileService _profileService = ProfileService();
+  
+  Profile? _activeProfile;
+  List<Profile> _profiles = [];
+  bool _isLoading = false;
+  
+  Profile? get activeProfile => _activeProfile;
+  List<Profile> get profiles => _profiles;
+  bool get isLoading => _isLoading;
+  
+  ProfileProvider() {
+    _initializeProfiles();
+  }
+  
+  Future<void> _initializeProfiles() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      await _loadProfiles();
+      await _loadActiveProfile();
+    } catch (e) {
+      print('Error initializing profiles: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+  
+  Future<void> _loadProfiles() async {
+    _profiles = await _profileService.getAllProfiles();
+  }
+  
+  Future<void> _loadActiveProfile() async {
+    _activeProfile = await _profileService.getActiveProfile();
+  }
+  
+  Future<void> refreshProfiles() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      await _loadProfiles();
+      await _loadActiveProfile();
+    } catch (e) {
+      print('Error refreshing profiles: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+  
+  Future<void> switchProfile(String profileId) async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      await _profileService.setActiveProfile(profileId);
+      await _loadActiveProfile();
+    } catch (e) {
+      print('Error switching profiles: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+  
+  Future<Profile> createProfile(String name, String email, {String photoUrl = ''}) async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      final newProfile = await _profileService.createProfile(name, email, photoUrl: photoUrl);
+      await refreshProfiles();
+      return newProfile;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+  
+  Future<Profile> updateProfile(Profile profile) async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      final updatedProfile = await _profileService.updateProfile(profile);
+      await refreshProfiles();
+      return updatedProfile;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+  
+  Future<void> deleteProfile(String profileId) async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      await _profileService.deleteProfile(profileId);
+      await refreshProfiles();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+2. Update `main.dart` to include the provider:
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/profile_provider.dart';
+import 'screens/profile_list_screen.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Profile Manager',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: ProfileListScreen(),
+      ),
+    );
+  }
+}
+```
+
+3. Create a profile switcher widget in `lib/widgets/profile_switcher.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/profile_provider.dart';
+import '../screens/profile_list_screen.dart';
+
+class ProfileSwitcher extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
+        final activeProfile = profileProvider.activeProfile;
+        
+        if (profileProvider.isLoading) {
+          return CircularProgressIndicator();
+        }
+        
+        if (activeProfile == null) {
+          return TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileListScreen()),
+              );
+            },
+            child: Text('Create Profile'),
+          );
+        }
+        
+        return InkWell(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) => _buildProfileSelector(context),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundImage: activeProfile.photoUrl.isNotEmpty
+                      ? NetworkImage(activeProfile.photoUrl)
+                      : null,
+                  child: activeProfile.photoUrl.isEmpty
+                      ? Text(activeProfile.name[0])
+                      : null,
+                ),
+                SizedBox(width: 8),
+                Text(activeProfile.name),
+                Icon(Icons.arrow_drop_down),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  
+  Widget _buildProfileSelector(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          title: Text(
+            'Switch Profile',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Divider(),
+        ...profileProvider.profiles.map((profile) {
+          final isActive = profile.id == profileProvider.activeProfile?.id;
+          
+          return ListTile(
+            leading: CircleAvatar(
+              backgroundImage: profile.photoUrl.isNotEmpty
+                  ? NetworkImage(profile.photoUrl)
+                  : null,
+              child: profile.photoUrl.isEmpty ? Text(profile.name[0]) : null,
+            ),
+            title: Text(profile.name),
+            subtitle: Text(profile.email),
+            trailing: isActive
+                ? Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: isActive
+                ? null
+                : () {
+                    profileProvider.switchProfile(profile.id);
+                    Navigator.pop(context);
+                  },
+          );
+        }).toList(),
+        Divider(),
+        ListTile(
+          leading: Icon(Icons.settings),
+          title: Text('Manage Profiles'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileListScreen()),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+4. Add the profile switcher to your app's main drawer or app bar:
+```dart
+import 'package:flutter/material.dart';
+import 'widgets/profile_switcher.dart';
+
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My App'),
+        actions: [
+          ProfileSwitcher(),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: ProfileSwitcher(),
+            ),
+            // Other drawer items
+          ],
+        ),
+      ),
+      body: Center(
+        child: Text('Main App Content'),
+      ),
+    );
+  }
+}
+```
+
+5. Add provider dependency to pubspec.yaml:
+```yaml
+dependencies:
+  provider: ^6.0.3
+```
+
+## 5. Implement Data Isolation Between Profiles [pending]
+### Dependencies: 3.1, 3.2, 3.4
+### Description: Create a mechanism to isolate data between different profiles, ensuring each profile has its own separate data
+### Details:
+1. Create a data isolation service in `lib/services/data_isolation_service.dart`:
+```dart
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/profile.dart';
+
+class DataIsolationService {
+  // Prefix for profile-specific data
+  static String getProfilePrefix(String profileId) => 'profile_${profileId}_';
+  
+  // Get profile-specific key
+  static String getProfileKey(String profileId, String key) {
+    return '${getProfilePrefix(profileId)}$key';
+  }
+  
+  // Save data for specific profile
+  static Future<bool> saveProfileData(String profileId, String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profileKey = getProfileKey(profileId, key);
+    
+    if (value is String) {
+      return prefs.setString(profileKey, value);
+    } else if (value is int) {
+      return prefs.setInt(profileKey, value);
+    } else if (value is double) {
+      return prefs.setDouble(profileKey, value);
+    } else if (value is bool) {
+      return prefs.setBool(profileKey, value);
+    } else if (value is List<String>) {
+      return prefs.setStringList(profileKey, value);
+    } else {
+      throw ArgumentError('Unsupported value type: ${value.runtimeType}');
+    }
+  }
+  
+  // Get data for specific profile
+  static Future<T?> getProfileData<T>(String profileId, String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profileKey = getProfileKey(profileId, key);
+    
+    return prefs.get(profileKey) as T?;
+  }
+  
+  // Remove data for specific profile
+  static Future<bool> removeProfileData(String profileId, String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final profileKey = getProfileKey(profileId, key);
+    
+    return prefs.remove(profileKey);
+  }
+  
+  // Clear all data for a profile
+  static Future<void> clearProfileData(String profileId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefix = getProfilePrefix(profileId);
+    
+    final keys = prefs.getKeys();
+    final profileKeys = keys.where((key) => key.startsWith(prefix));
+    
+    for (final key in profileKeys) {
+      await prefs.remove(key);
+    }
+  }
+}
+```
+
+2. Create a profile-aware data service in `lib/services/profile_data_service.dart`:
+```dart
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import '../providers/profile_provider.dart';
+import 'data_isolation_service.dart';
+
+class ProfileDataService {
+  final BuildContext context;
+  
+  ProfileDataService(this.context);
+  
+  // Get the current active profile ID
+  String? get _activeProfileId {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    return profileProvider.activeProfile?.id;
+  }
+  
+  // Save data for current profile
+  Future<bool> saveData(String key, dynamic value) async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      throw Exception('No active profile');
+    }
+    
+    return DataIsolationService.saveProfileData(profileId, key, value);
+  }
+  
+  // Get data for current profile
+  Future<T?> getData<T>(String key) async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      throw Exception('No active profile');
+    }
+    
+    return DataIsolationService.getProfileData<T>(profileId, key);
+  }
+  
+  // Remove data for current profile
+  Future<bool> removeData(String key) async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      throw Exception('No active profile');
+    }
+    
+    return DataIsolationService.removeProfileData(profileId, key);
+  }
+  
+  // Clear all data for current profile
+  Future<void> clearAllData() async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      throw Exception('No active profile');
+    }
+    
+    return DataIsolationService.clearProfileData(profileId);
+  }
+}
+```
+
+3. Create a profile data provider extension in `lib/extensions/profile_data_extension.dart`:
+```dart
+import 'package:flutter/material.dart';
+import '../services/profile_data_service.dart';
+
+extension ProfileDataExtension on BuildContext {
+  // Get the profile data service for the current context
+  ProfileDataService get profileData => ProfileDataService(this);
+}
+```
+
+4. Example usage in a widget:
+```dart
+import 'package:flutter/material.dart';
+import '../extensions/profile_data_extension.dart';
+
+class ProfileSpecificSettingsScreen extends StatefulWidget {
+  @override
+  _ProfileSpecificSettingsScreenState createState() => _ProfileSpecificSettingsScreenState();
+}
+
+class _ProfileSpecificSettingsScreenState extends State<ProfileSpecificSettingsScreen> {
+  bool _isDarkMode = false;
+  String _username = '';
+  bool _isLoading = true;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+  
+  Future<void> _loadSettings() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      // Load profile-specific settings
+      _isDarkMode = await context.profileData.getData<bool>('dark_mode') ?? false;
+      _username = await context.profileData.getData<String>('username') ?? '';
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading settings: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+  
+  Future<void> _saveSettings() async {
+    try {
+      await context.profileData.saveData('dark_mode', _isDarkMode);
+      await context.profileData.saveData('username', _username);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Settings saved')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving settings: $e')),
+      );
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile Settings'),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _username,
+                    onChanged: (value) => setState(() => _username = value),
+                  ),
+                  SizedBox(height: 16),
+                  SwitchListTile(
+                    title: Text('Dark Mode'),
+                    value: _isDarkMode,
+                    onChanged: (value) => setState(() => _isDarkMode = value),
+                  ),
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _saveSettings,
+                    child: Text('Save Settings'),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+```
+
+## 6. Implement Profile Avatar and Theme Customization [pending]
+### Dependencies: 3.1, 3.2, 3.3, 3.5
+### Description: Add functionality for users to customize their profile avatar and theme preferences
+### Details:
+1. Update the Profile model in `lib/models/profile.dart` to include theme preferences:
+```dart
+class Profile {
+  final String id;
+  final String name;
+  final String email;
+  final String photoUrl;
+  final Map<String, dynamic> preferences;
+  final ThemePreferences themePreferences;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  Profile({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.photoUrl = '',
+    this.preferences = const {},
+    ThemePreferences? themePreferences,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) : 
+    this.themePreferences = themePreferences ?? ThemePreferences(),
+    this.createdAt = createdAt ?? DateTime.now(),
+    this.updatedAt = updatedAt ?? DateTime.now();
+
+  // Convert Profile to Map for storage
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'photoUrl': photoUrl,
+      'preferences': preferences,
+      'themePreferences': themePreferences.toMap(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  // Create Profile from Map
+  factory Profile.fromMap(Map<String, dynamic> map) {
+    return Profile(
+      id: map['id'],
+      name: map['name'],
+      email: map['email'],
+      photoUrl: map['photoUrl'] ?? '',
+      preferences: map['preferences'] ?? {},
+      themePreferences: map['themePreferences'] != null 
+          ? ThemePreferences.fromMap(map['themePreferences']) 
+          : null,
+      createdAt: DateTime.parse(map['createdAt']),
+      updatedAt: DateTime.parse(map['updatedAt']),
+    );
+  }
+
+  // Create copy of Profile with some fields changed
+  Profile copyWith({
+    String? name,
+    String? email,
+    String? photoUrl,
+    Map<String, dynamic>? preferences,
+    ThemePreferences? themePreferences,
+  }) {
+    return Profile(
+      id: this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      preferences: preferences ?? this.preferences,
+      themePreferences: themePreferences ?? this.themePreferences,
+      createdAt: this.createdAt,
+      updatedAt: DateTime.now(),
+    );
+  }
+}
+
+class ThemePreferences {
+  final bool isDarkMode;
+  final int primaryColorValue;
+  final int accentColorValue;
+  final double fontSize;
+
+  ThemePreferences({
+    this.isDarkMode = false,
+    this.primaryColorValue = 0xFF2196F3, // Default blue
+    this.accentColorValue = 0xFF03DAC5,  // Default teal
+    this.fontSize = 1.0, // Default scale factor
+  });
+
+  // Convert to Color objects
+  Color get primaryColor => Color(primaryColorValue);
+  Color get accentColor => Color(accentColorValue);
+
+  // Convert to Map
+  Map<String, dynamic> toMap() {
+    return {
+      'isDarkMode': isDarkMode,
+      'primaryColorValue': primaryColorValue,
+      'accentColorValue': accentColorValue,
+      'fontSize': fontSize,
+    };
+  }
+
+  // Create from Map
+  factory ThemePreferences.fromMap(Map<String, dynamic> map) {
+    return ThemePreferences(
+      isDarkMode: map['isDarkMode'] ?? false,
+      primaryColorValue: map['primaryColorValue'] ?? 0xFF2196F3,
+      accentColorValue: map['accentColorValue'] ?? 0xFF03DAC5,
+      fontSize: map['fontSize'] ?? 1.0,
+    );
+  }
+
+  // Create copy with some fields changed
+  ThemePreferences copyWith({
+    bool? isDarkMode,
+    int? primaryColorValue,
+    int? accentColorValue,
+    double? fontSize,
+  }) {
+    return ThemePreferences(
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+      primaryColorValue: primaryColorValue ?? this.primaryColorValue,
+      accentColorValue: accentColorValue ?? this.accentColorValue,
+      fontSize: fontSize ?? this.fontSize,
+    );
+  }
+}
+```
+
+2. Create a theme provider in `lib/providers/theme_provider.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/profile.dart';
+import 'profile_provider.dart';
+
+class ThemeProvider extends ChangeNotifier {
+  ThemePreferences _themePreferences = ThemePreferences();
+  
+  ThemePreferences get themePreferences => _themePreferences;
+  
+  // Initialize theme from active profile
+  void updateFromProfile(Profile? profile) {
+    if (profile != null) {
+      _themePreferences = profile.themePreferences;
+      notifyListeners();
+    }
+  }
+  
+  // Update theme preferences
+  Future<void> updateThemePreferences(ThemePreferences preferences, BuildContext context) async {
+    _themePreferences = preferences;
+    notifyListeners();
+    
+    // Update the profile with new theme preferences
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final activeProfile = profileProvider.activeProfile;
+    
+    if (activeProfile != null) {
+      final updatedProfile = activeProfile.copyWith(
+        themePreferences: preferences,
+      );
+      await profileProvider.updateProfile(updatedProfile);
+    }
+  }
+  
+  // Get the current theme data
+  ThemeData getThemeData() {
+    return _themePreferences.isDarkMode
+        ? ThemeData.dark().copyWith(
+            primaryColor: _themePreferences.primaryColor,
+            colorScheme: ColorScheme.dark(
+              primary: _themePreferences.primaryColor,
+              secondary: _themePreferences.accentColor,
+            ),
+            textTheme: ThemeData.dark().textTheme.apply(
+              fontSizeFactor: _themePreferences.fontSize,
+            ),
+          )
+        : ThemeData.light().copyWith(
+            primaryColor: _themePreferences.primaryColor,
+            colorScheme: ColorScheme.light(
+              primary: _themePreferences.primaryColor,
+              secondary: _themePreferences.accentColor,
+            ),
+            textTheme: ThemeData.light().textTheme.apply(
+              fontSizeFactor: _themePreferences.fontSize,
+            ),
+          );
+  }
+}
+```
+
+3. Create a profile appearance settings screen in `lib/screens/profile_appearance_screen.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/profile.dart';
+import '../providers/profile_provider.dart';
+import '../providers/theme_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'dart:math' as math;
+
+class ProfileAppearanceScreen extends StatefulWidget {
+  @override
+  _ProfileAppearanceScreenState createState() => _ProfileAppearanceScreenState();
+}
+
+class _ProfileAppearanceScreenState extends State<ProfileAppearanceScreen> {
+  final List<Color> _colorOptions = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.purple,
+    Colors.orange,
+    Colors.teal,
+    Colors.pink,
+    Colors.indigo,
+  ];
+  
+  late ThemePreferences _themePreferences;
+  bool _isLoading = false;
+  final ImagePicker _picker = ImagePicker();
+  
+  @override
+  void initState() {
+    super.initState();
+    _themePreferences = Provider.of<ThemeProvider>(context, listen: false).themePreferences;
+  }
+  
+  Future<void> _saveThemePreferences() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      await Provider.of<ThemeProvider>(context, listen: false)
+          .updateThemePreferences(_themePreferences, context);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Appearance settings saved')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving appearance settings: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+  
+  Future<void> _pickProfileImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      
+      // Save image to app documents directory
+      final appDir = await getApplicationDocumentsDirectory();
+      final profileId = Provider.of<ProfileProvider>(context, listen: false).activeProfile?.id;
+      if (profileId == null) return;
+      
+      final fileName = 'profile_${profileId}_${math.Random().nextInt(10000)}.jpg';
+      final savedImage = File('${appDir.path}/$fileName');
+      await savedImage.writeAsBytes(await image.readAsBytes());
+      
+      // Update profile with new image path
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      final activeProfile = profileProvider.activeProfile;
+      if (activeProfile != null) {
+        final updatedProfile = activeProfile.copyWith(
+          photoUrl: savedImage.path,
+        );
+        await profileProvider.updateProfile(updatedProfile);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile picture updated')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile picture: $e')),
+      );
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final activeProfile = profileProvider.activeProfile;
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Appearance Settings'),
+      ),
+      body: _isLoading || activeProfile == null
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Picture Section
+                  Center(
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: _pickProfileImage,
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 60,
+                                backgroundImage: activeProfile.photoUrl.isNotEmpty
+                                    ? activeProfile.photoUrl.startsWith('http')
+                                        ? NetworkImage(activeProfile.photoUrl)
+                                        : FileImage(File(activeProfile.photoUrl)) as ImageProvider
+                                    : null,
+                                child: activeProfile.photoUrl.isEmpty
+                                    ? Text(
+                                        activeProfile.name[0].toUpperCase(),
+                                        style: TextStyle(fontSize: 40),
+                                      )
+                                    : null,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Tap to change profile picture',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(height: 32),
+                  Text(
+                    'Theme Settings',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  SizedBox(height: 16),
+                  
+                  // Dark Mode Toggle
+                  SwitchListTile(
+                    title: Text('Dark Mode'),
+                    value: _themePreferences.isDarkMode,
+                    onChanged: (value) {
+                      setState(() {
+                        _themePreferences = _themePreferences.copyWith(
+                          isDarkMode: value,
+                        );
+                      });
+                    },
+                  ),
+                  
+                  SizedBox(height: 16),
+                  Text('Primary Color'),
+                  SizedBox(height: 8),
+                  
+                  // Color Selection
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: _colorOptions.map((color) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _themePreferences = _themePreferences.copyWith(
+                              primaryColorValue: color.value,
+                            );
+                          });
+                        },
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _themePreferences.primaryColorValue == color.value
+                                  ? Colors.white
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                          ),
+                          child: _themePreferences.primaryColorValue == color.value
+                              ? Icon(Icons.check, color: Colors.white)
+                              : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  
+                  SizedBox(height: 24),
+                  Text('Accent Color'),
+                  SizedBox(height: 8),
+                  
+                  // Accent Color Selection
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: _colorOptions.map((color) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _themePreferences = _themePreferences.copyWith(
+                              accentColorValue: color.value,
+                            );
+                          });
+                        },
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _themePreferences.accentColorValue == color.value
+                                  ? Colors.white
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                          ),
+                          child: _themePreferences.accentColorValue == color.value
+                              ? Icon(Icons.check, color: Colors.white)
+                              : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  
+                  SizedBox(height: 24),
+                  Text('Font Size'),
+                  
+                  // Font Size Slider
+                  Slider(
+                    value: _themePreferences.fontSize,
+                    min: 0.8,
+                    max: 1.4,
+                    divisions: 6,
+                    label: _themePreferences.fontSize.toStringAsFixed(1) + 'x',
+                    onChanged: (value) {
+                      setState(() {
+                        _themePreferences = _themePreferences.copyWith(
+                          fontSize: value,
+                        );
+                      });
+                    },
+                  ),
+                  
+                  SizedBox(height: 32),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _saveThemePreferences,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        child: Text('Save Appearance Settings'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+```
+
+4. Update `main.dart` to include the theme provider:
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/profile_provider.dart';
+import 'providers/theme_provider.dart';
+import 'screens/profile_list_screen.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: ProfileThemeConsumer(),
+    );
+  }
+}
+
+class ProfileThemeConsumer extends StatefulWidget {
+  @override
+  _ProfileThemeConsumerState createState() => _ProfileThemeConsumerState();
+}
+
+class _ProfileThemeConsumerState extends State<ProfileThemeConsumer> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen for profile changes to update theme
+    Future.delayed(Duration.zero, () {
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      profileProvider.addListener(_updateThemeFromProfile);
+    });
+  }
+  
+  @override
+  void dispose() {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    profileProvider.removeListener(_updateThemeFromProfile);
+    super.dispose();
+  }
+  
+  void _updateThemeFromProfile() {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.updateFromProfile(profileProvider.activeProfile);
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Profile Manager',
+          theme: themeProvider.getThemeData(),
+          home: ProfileListScreen(),
+        );
+      },
+    );
+  }
+}
+```
+
+5. Add dependencies to pubspec.yaml:
+```yaml
+dependencies:
+  image_picker: ^0.8.5+3
+  path_provider: ^2.0.11
+```
+

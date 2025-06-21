@@ -1,0 +1,60 @@
+# Task ID: 10
+# Title: Notification System
+# Status: pending
+# Dependencies: 5, 7
+# Priority: low
+# Description: Develop the opt-in notification system for phase transitions, predicted low energy days, mood sensitivity reminders, and period start predictions.
+# Details:
+1. Integrate flutter_local_notifications package
+2. Create NotificationService class
+3. Implement notification types:
+   - Phase transition alerts
+   - Predicted low energy day warnings
+   - Mood sensitivity reminders
+   - Period start predictions
+   - Custom reminders
+4. Design notification settings UI with opt-in controls
+5. Create notification scheduling based on predictions
+6. Implement quiet hours settings
+7. Add notification history view
+8. Create per-profile notification preferences
+
+# Test Strategy:
+1. Unit tests for NotificationService
+2. Test notification scheduling accuracy
+3. Verify opt-in functionality works correctly
+4. Test quiet hours enforcement
+5. Integration tests for notification generation
+6. Verify notifications appear correctly on both platforms
+
+# Subtasks:
+## 1. Core Notification Service Architecture [pending]
+### Dependencies: None
+### Description: Design and implement the core notification service that will handle all notification operations
+### Details:
+Create a centralized notification service that will: 1) Interface with the prediction engine to receive phase transition and symptom predictions, 2) Implement a queue system for pending notifications, 3) Create a notification dispatcher that respects user preferences, 4) Design interfaces for different notification types, 5) Implement logging for notification delivery and user interactions
+
+## 2. Notification Types and Content Templates [pending]
+### Dependencies: 10.1
+### Description: Define different notification types and create content templates for each notification scenario
+### Details:
+Implement various notification types including: 1) Phase transition alerts, 2) Predicted symptom warnings, 3) Medication reminders, 4) Custom user-defined notifications. For each type, create customizable templates with appropriate tone and content. Ensure notifications are informative but respectful, with clear opt-in messaging and educational content where appropriate.
+
+## 3. Notification Settings UI [pending]
+### Dependencies: 10.1, 10.2
+### Description: Design and implement the user interface for notification preferences and settings
+### Details:
+Create a comprehensive settings screen that allows users to: 1) Enable/disable specific notification types, 2) Set quiet hours with start and end times, 3) Configure notification frequency and intensity, 4) Preview what different notifications will look like, 5) Set up custom notifications for specific events. Include clear explanations of each setting's purpose and impact.
+
+## 4. Notification Scheduling Logic [pending]
+### Dependencies: 10.1, 10.2, 10.3
+### Description: Implement intelligent scheduling for notifications based on predictions and user preferences
+### Details:
+Develop scheduling algorithms that: 1) Integrate with the prediction engine to time notifications appropriately before predicted events, 2) Respect quiet hours and do not disturb settings, 3) Implement priority levels for different notification types, 4) Handle notification batching to prevent overwhelming the user, 5) Include logic for follow-up notifications when appropriate (e.g., checking if a predicted symptom actually occurred)
+
+## 5. Platform-Specific Notification Implementation [pending]
+### Dependencies: 10.1, 10.2, 10.4
+### Description: Implement platform-specific notification handling for iOS and Android
+### Details:
+Create platform-specific implementations that: 1) Utilize native notification APIs for iOS and Android, 2) Handle foreground and background notification states, 3) Implement deep linking from notifications to relevant app sections, 4) Handle notification permissions requests respectfully with clear explanations, 5) Implement notification channels on Android for granular control, 6) Support rich notifications with appropriate actions based on notification type
+

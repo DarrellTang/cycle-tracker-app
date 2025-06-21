@@ -1,0 +1,62 @@
+# Task ID: 5
+# Title: Phase-Based Insights Engine
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Implement the engine that calculates and displays phase-based insights including current phase indicators and days until next phase transition.
+# Details:
+1. Create PhaseCalculator class to determine:
+   - Current phase for each profile
+   - Days remaining in current phase
+   - Next phase transition date
+   - Phase duration based on individual patterns
+2. Implement the four phase tracking logic:
+   - Menstrual (days 1-5)
+   - Follicular (days 1-13)
+   - Ovulation (days 12-17)
+   - Luteal (days 15-28)
+3. Allow for phase duration customization
+4. Create phase history analysis
+5. Design UI components for phase visualization
+6. Implement phase-specific information display
+7. Add phase transition predictions based on historical data
+
+# Test Strategy:
+1. Unit tests for PhaseCalculator with various scenarios
+2. Test phase duration customization
+3. Verify phase transition predictions
+4. Test with irregular cycle data
+5. Integration tests for phase visualization
+6. Verify accuracy against sample datasets
+
+# Subtasks:
+## 1. Implement Phase Calculation Algorithm [pending]
+### Dependencies: None
+### Description: Develop the core algorithm to accurately calculate menstrual cycle phases based on user data
+### Details:
+Create a robust algorithm that processes user-input dates, cycle lengths, and symptoms to determine current phase (menstrual, follicular, ovulatory, luteal). Handle edge cases like irregular cycles, missing data points, and cycle variations. Include logic to normalize data across multiple cycles for improved accuracy. The algorithm should output a clear phase designation with confidence score.
+
+## 2. Build Phase Duration Customization System [pending]
+### Dependencies: 5.1
+### Description: Create functionality allowing users to customize phase lengths based on their personal cycle patterns
+### Details:
+Develop UI components and backend logic for users to adjust default phase durations. Include data validation to ensure physiologically possible values. Store user-specific phase duration preferences and implement override capabilities. Create a calibration system that suggests optimal phase durations based on historical data while allowing manual adjustments.
+
+## 3. Develop Phase History Analysis Module [pending]
+### Dependencies: 5.1
+### Description: Create analytics system to identify patterns in symptoms, moods, and energy levels across cycle phases
+### Details:
+Build data processing pipeline to analyze historical phase data, identifying correlations between phases and reported symptoms/moods. Implement statistical methods to determine significance of patterns. Create storage system for phase-specific symptom profiles (e.g., typical energy levels, mood changes, physical symptoms for each phase). Include functionality to refine these profiles over time as more data is collected.
+
+## 4. Design Phase Visualization Components [pending]
+### Dependencies: 5.1, 5.3
+### Description: Create interactive UI components to display current phase, associated symptoms, and historical patterns
+### Details:
+Develop a circular phase indicator showing current position in cycle with color-coding for different phases. Create expandable cards displaying phase-specific information (typical symptoms, duration, tips). Design timeline view showing historical phase data with symptom intensity markers. Implement toggles to filter visualization by symptom categories. Ensure all components are responsive and accessible.
+
+## 5. Implement Phase Transition Prediction System [pending]
+### Dependencies: 5.1, 5.3
+### Description: Develop predictive algorithms to forecast upcoming phase changes and associated symptom patterns
+### Details:
+Create prediction model using historical phase data to forecast timing of upcoming transitions. Implement notification system for imminent phase changes with expected symptom shifts. Develop confidence scoring for predictions based on cycle regularity. Include personalized recommendations for managing predicted symptom changes. Build feedback mechanism to improve prediction accuracy based on actual transitions.
+

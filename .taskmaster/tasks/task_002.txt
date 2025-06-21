@@ -1,0 +1,180 @@
+# Task ID: 2
+# Title: Database Schema Design & Implementation
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Design and implement the SQLite database schema to support multiple profiles, cycle tracking, and symptom logging with local-only storage.
+# Details:
+1. Create database models for:
+   - Profiles (id, name, photo, color, cycle_length, etc.)
+   - Cycles (profile_id, start_date, end_date, notes)
+   - Phases (cycle_id, phase_type, start_day, end_day)
+   - Symptoms (profile_id, date, symptom_type, severity, notes)
+   - DailyLogs (profile_id, date, observations, mood, energy, etc.)
+2. Implement SQLite database helper class with CRUD operations
+3. Add encryption for the database using sqlite_cipher or similar
+4. Create data repositories for each model
+5. Implement data access layer with repository pattern
+6. Add methods for querying historical data and calculating predictions
+7. Create database migration strategy for future updates
+
+# Test Strategy:
+1. Unit tests for all database operations
+2. Integration tests for repository classes
+3. Test data persistence across app restarts
+4. Verify encryption is working correctly
+5. Performance testing with large datasets
+6. Test edge cases like corrupted data recovery
+
+# Subtasks:
+## 1. Define Database Schema Requirements [pending]
+### Dependencies: None
+### Description: Identify all entities, attributes, and relationships needed for the application
+### Details:
+Create a comprehensive list of all data entities (users, tasks, categories, etc.) with their attributes. Define primary keys, foreign keys, and relationships between tables. Consider data types, constraints, and indexing needs. Example: User table with fields like id (INTEGER PRIMARY KEY), name (TEXT), email (TEXT UNIQUE), created_at (TIMESTAMP), etc. Draw an Entity-Relationship Diagram (ERD) to visualize the schema.
+
+## 2. Implement SQLite Database Helper [pending]
+### Dependencies: 2.1
+### Description: Create a database helper class to manage SQLite operations
+### Details:
+Create a DatabaseHelper class that extends sqflite's Database class. Implement singleton pattern for database access. Add methods for database initialization, version management, and table creation. Example code:
+```dart
+class DatabaseHelper {
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
+  static Database? _database;
+  
+  factory DatabaseHelper() => _instance;
+  
+  DatabaseHelper._internal();
+  
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+  
+  Future<Database> _initDatabase() async {
+    String path = join(await getDatabasesPath(), 'app_database.db');
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
+  }
+  
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute(
+      'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'
+    );
+    // Create other tables
+  }
+}
+```
+
+## 3. Implement Data Encryption [pending]
+### Dependencies: 2.2
+### Description: Add encryption for sensitive data stored in the database
+### Details:
+Research and select an encryption library compatible with Flutter (e.g., encrypt, flutter_secure_storage). Create utility functions for encrypting/decrypting data. Identify which fields need encryption (e.g., personal info, credentials). Modify database operations to encrypt data before storage and decrypt after retrieval. Example:
+```dart
+class EncryptionService {
+  final key = Key.fromUtf8('your-32-character-secret-key-here');
+  final iv = IV.fromLength(16);
+  late final Encrypter _encrypter;
+  
+  EncryptionService() {
+    _encrypter = Encrypter(AES(key));
+  }
+  
+  String encrypt(String text) {
+    return _encrypter.encrypt(text, iv: iv).base64;
+  }
+  
+  String decrypt(String encryptedText) {
+    return _encrypter.decrypt64(encryptedText, iv: iv);
+  }
+}
+```
+
+## 4. Implement Repository Pattern [pending]
+### Dependencies: 2.2, 2.3
+### Description: Create repository classes for each entity to abstract database operations
+### Details:
+Create an abstract BaseRepository interface with CRUD operations. Implement concrete repositories for each entity (UserRepository, TaskRepository, etc.). Use dependency injection for database access. Example:
+```dart
+abstract class BaseRepository<T> {
+  Future<int> insert(T item);
+  Future<int> update(T item);
+  Future<int> delete(int id);
+  Future<T?> getById(int id);
+  Future<List<T>> getAll();
+}
+
+class UserRepository implements BaseRepository<User> {
+  final DatabaseHelper _dbHelper;
+  final EncryptionService _encryptionService;
+  
+  UserRepository(this._dbHelper, this._encryptionService);
+  
+  @override
+  Future<int> insert(User user) async {
+    final db = await _dbHelper.database;
+    // Encrypt sensitive data
+    final encryptedEmail = _encryptionService.encrypt(user.email);
+    return await db.insert('users', {
+      'name': user.name,
+      'email': encryptedEmail,
+      // other fields
+    });
+  }
+  
+  // Implement other methods
+}
+```
+
+## 5. Develop Database Migration Strategy [pending]
+### Dependencies: 2.2
+### Description: Create a system for handling database schema changes and migrations
+### Details:
+Implement version-based migration system using sqflite's onUpgrade callback. Create migration scripts for potential schema changes. Test migration paths from each version to the next. Example:
+```dart
+Future<Database> _initDatabase() async {
+  String path = join(await getDatabasesPath(), 'app_database.db');
+  return await openDatabase(
+    path,
+    version: 2, // Increment when schema changes
+    onCreate: _onCreate,
+    onUpgrade: _onUpgrade,
+  );
+}
+
+Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  if (oldVersion < 2) {
+    // Migration from version 1 to 2
+    await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT');
+  }
+  // Add more version checks for future migrations
+}
+```
+
+## 6. Optimize Database Queries [pending]
+### Dependencies: 2.4, 2.5
+### Description: Implement indexing and query optimization for better performance
+### Details:
+Identify frequently used queries and optimize them. Add appropriate indexes to speed up lookups. Implement batch operations for bulk inserts/updates. Use transactions for related operations. Example:
+```dart
+// Adding indexes during table creation
+Future<void> _onCreate(Database db, int version) async {
+  await db.execute(
+    'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'
+  );
+  await db.execute('CREATE INDEX idx_user_email ON users(email)');
+  
+  // Using transactions for related operations
+  Future<void> createUserWithSettings(User user, UserSettings settings) async {
+    final db = await _dbHelper.database;
+    await db.transaction((txn) async {
+      int userId = await txn.insert('users', user.toMap());
+      settings.userId = userId;
+      await txn.insert('user_settings', settings.toMap());
+    });
+  }
+}
+```
+

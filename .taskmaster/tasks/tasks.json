@@ -1,0 +1,1052 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Flutter Project Setup & Architecture",
+        "description": "Initialize the Flutter project with the required dependencies and establish the foundational architecture for the Cycle Tracker App.",
+        "details": "1. Create a new Flutter project using the latest stable version\n2. Configure for both iOS and Android platforms\n3. Set up the project structure following clean architecture principles:\n   - data/ (repositories, data sources)\n   - domain/ (entities, use cases)\n   - presentation/ (UI, view models)\n4. Add required dependencies in pubspec.yaml:\n   - sqflite for local database\n   - provider or riverpod for state management\n   - fl_chart for visualization\n   - table_calendar for calendar views\n   - flutter_local_notifications for notifications\n   - local_auth for biometric authentication\n5. Configure app theme with support for dark mode\n6. Set up navigation using Navigator 2.0 or GoRouter\n7. Create CI/CD pipeline configuration",
+        "testStrategy": "1. Verify project builds successfully on both iOS and Android\n2. Run flutter analyze to ensure code quality\n3. Create basic widget tests for the app scaffold\n4. Test navigation between placeholder screens\n5. Verify theme switching functionality",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Flutter Installation and Project Creation",
+            "description": "Set up Flutter SDK and create a new project with the recommended structure",
+            "dependencies": [],
+            "details": "1. Install Flutter SDK: Download from flutter.dev and add to PATH\n2. Run 'flutter doctor' to verify installation\n3. Install Android Studio and/or Xcode\n4. Create project: 'flutter create my_app --org com.example'\n5. Verify setup: 'cd my_app && flutter run'\n\nCommon pitfalls:\n- PATH configuration issues - ensure flutter/bin is in your PATH\n- Android SDK license agreements not accepted\n- Missing Xcode tools on macOS",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Dependency Management Setup",
+            "description": "Configure essential packages and organize dependencies in pubspec.yaml",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Open pubspec.yaml in project root\n2. Add core dependencies:\n   ```yaml\n   dependencies:\n     flutter:\n       sdk: flutter\n     provider: ^6.0.0  # State management\n     http: ^0.13.5  # API requests\n     shared_preferences: ^2.0.15  # Local storage\n     flutter_bloc: ^8.1.1  # Alternative state management\n   ```\n3. Run 'flutter pub get'\n4. Create a dependencies.dart file to centralize imports\n\nCommon pitfalls:\n- Version conflicts between packages\n- Incorrect YAML indentation\n- Missing 'flutter pub get' after changes",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement Clean Architecture Structure",
+            "description": "Set up project folders following clean architecture principles",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Create these directories in lib/:\n   - /presentation (UI components)\n     - /screens\n     - /widgets\n   - /domain (Business logic)\n     - /entities\n     - /repositories (interfaces)\n     - /usecases\n   - /data (Data sources)\n     - /repositories (implementations)\n     - /datasources\n     - /models\n   - /core (Shared utilities)\n\n2. Create sample files in each directory\n3. Implement dependency injection using provider or get_it package\n\nCommon pitfalls:\n- Circular dependencies\n- Mixing concerns between layers\n- Overly complex folder structure for beginners",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Navigation and Routing Setup",
+            "description": "Implement app navigation system with named routes",
+            "dependencies": [
+              3
+            ],
+            "details": "1. Create a router.dart file in lib/core/\n2. Define route names as constants:\n   ```dart\n   class Routes {\n     static const String home = '/';\n     static const String details = '/details';\n   }\n   ```\n3. Set up route generation:\n   ```dart\n   Route<dynamic> generateRoute(RouteSettings settings) {\n     switch (settings.name) {\n       case Routes.home:\n         return MaterialPageRoute(builder: (_) => HomeScreen());\n       default:\n         return MaterialPageRoute(builder: (_) => NotFoundScreen());\n     }\n   }\n   ```\n4. Configure in main.dart:\n   ```dart\n   MaterialApp(\n     onGenerateRoute: generateRoute,\n     initialRoute: Routes.home,\n   )\n   ```\n\nCommon pitfalls:\n- Forgetting to register routes\n- Navigation state management issues\n- Not handling unknown routes",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "CI/CD Pipeline Configuration",
+            "description": "Set up continuous integration and deployment for the Flutter project",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "1. Create a .github/workflows directory in project root\n2. Add flutter-ci.yml file:\n   ```yaml\n   name: Flutter CI\n   on: [push, pull_request]\n   jobs:\n     build:\n       runs-on: ubuntu-latest\n       steps:\n         - uses: actions/checkout@v2\n         - uses: subosito/flutter-action@v2\n           with:\n             flutter-version: '3.3.0'\n         - run: flutter pub get\n         - run: flutter analyze\n         - run: flutter test\n   ```\n3. Configure Firebase App Distribution or Codemagic for deployment\n4. Add a README.md with build status badge\n\nCommon pitfalls:\n- Missing environment secrets\n- Not caching build dependencies\n- Insufficient test coverage\n- Platform-specific build issues",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Database Schema Design & Implementation",
+        "description": "Design and implement the SQLite database schema to support multiple profiles, cycle tracking, and symptom logging with local-only storage.",
+        "details": "1. Create database models for:\n   - Profiles (id, name, photo, color, cycle_length, etc.)\n   - Cycles (profile_id, start_date, end_date, notes)\n   - Phases (cycle_id, phase_type, start_day, end_day)\n   - Symptoms (profile_id, date, symptom_type, severity, notes)\n   - DailyLogs (profile_id, date, observations, mood, energy, etc.)\n2. Implement SQLite database helper class with CRUD operations\n3. Add encryption for the database using sqlite_cipher or similar\n4. Create data repositories for each model\n5. Implement data access layer with repository pattern\n6. Add methods for querying historical data and calculating predictions\n7. Create database migration strategy for future updates",
+        "testStrategy": "1. Unit tests for all database operations\n2. Integration tests for repository classes\n3. Test data persistence across app restarts\n4. Verify encryption is working correctly\n5. Performance testing with large datasets\n6. Test edge cases like corrupted data recovery",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Database Schema Requirements",
+            "description": "Identify all entities, attributes, and relationships needed for the application",
+            "dependencies": [],
+            "details": "Create a comprehensive list of all data entities (users, tasks, categories, etc.) with their attributes. Define primary keys, foreign keys, and relationships between tables. Consider data types, constraints, and indexing needs. Example: User table with fields like id (INTEGER PRIMARY KEY), name (TEXT), email (TEXT UNIQUE), created_at (TIMESTAMP), etc. Draw an Entity-Relationship Diagram (ERD) to visualize the schema.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement SQLite Database Helper",
+            "description": "Create a database helper class to manage SQLite operations",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a DatabaseHelper class that extends sqflite's Database class. Implement singleton pattern for database access. Add methods for database initialization, version management, and table creation. Example code:\n```dart\nclass DatabaseHelper {\n  static final DatabaseHelper _instance = DatabaseHelper._internal();\n  static Database? _database;\n  \n  factory DatabaseHelper() => _instance;\n  \n  DatabaseHelper._internal();\n  \n  Future<Database> get database async {\n    if (_database != null) return _database!;\n    _database = await _initDatabase();\n    return _database!;\n  }\n  \n  Future<Database> _initDatabase() async {\n    String path = join(await getDatabasesPath(), 'app_database.db');\n    return await openDatabase(path, version: 1, onCreate: _onCreate);\n  }\n  \n  Future<void> _onCreate(Database db, int version) async {\n    await db.execute(\n      'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'\n    );\n    // Create other tables\n  }\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement Data Encryption",
+            "description": "Add encryption for sensitive data stored in the database",
+            "dependencies": [
+              2
+            ],
+            "details": "Research and select an encryption library compatible with Flutter (e.g., encrypt, flutter_secure_storage). Create utility functions for encrypting/decrypting data. Identify which fields need encryption (e.g., personal info, credentials). Modify database operations to encrypt data before storage and decrypt after retrieval. Example:\n```dart\nclass EncryptionService {\n  final key = Key.fromUtf8('your-32-character-secret-key-here');\n  final iv = IV.fromLength(16);\n  late final Encrypter _encrypter;\n  \n  EncryptionService() {\n    _encrypter = Encrypter(AES(key));\n  }\n  \n  String encrypt(String text) {\n    return _encrypter.encrypt(text, iv: iv).base64;\n  }\n  \n  String decrypt(String encryptedText) {\n    return _encrypter.decrypt64(encryptedText, iv: iv);\n  }\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Repository Pattern",
+            "description": "Create repository classes for each entity to abstract database operations",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create an abstract BaseRepository interface with CRUD operations. Implement concrete repositories for each entity (UserRepository, TaskRepository, etc.). Use dependency injection for database access. Example:\n```dart\nabstract class BaseRepository<T> {\n  Future<int> insert(T item);\n  Future<int> update(T item);\n  Future<int> delete(int id);\n  Future<T?> getById(int id);\n  Future<List<T>> getAll();\n}\n\nclass UserRepository implements BaseRepository<User> {\n  final DatabaseHelper _dbHelper;\n  final EncryptionService _encryptionService;\n  \n  UserRepository(this._dbHelper, this._encryptionService);\n  \n  @override\n  Future<int> insert(User user) async {\n    final db = await _dbHelper.database;\n    // Encrypt sensitive data\n    final encryptedEmail = _encryptionService.encrypt(user.email);\n    return await db.insert('users', {\n      'name': user.name,\n      'email': encryptedEmail,\n      // other fields\n    });\n  }\n  \n  // Implement other methods\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Develop Database Migration Strategy",
+            "description": "Create a system for handling database schema changes and migrations",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement version-based migration system using sqflite's onUpgrade callback. Create migration scripts for potential schema changes. Test migration paths from each version to the next. Example:\n```dart\nFuture<Database> _initDatabase() async {\n  String path = join(await getDatabasesPath(), 'app_database.db');\n  return await openDatabase(\n    path,\n    version: 2, // Increment when schema changes\n    onCreate: _onCreate,\n    onUpgrade: _onUpgrade,\n  );\n}\n\nFuture<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {\n  if (oldVersion < 2) {\n    // Migration from version 1 to 2\n    await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT');\n  }\n  // Add more version checks for future migrations\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Optimize Database Queries",
+            "description": "Implement indexing and query optimization for better performance",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Identify frequently used queries and optimize them. Add appropriate indexes to speed up lookups. Implement batch operations for bulk inserts/updates. Use transactions for related operations. Example:\n```dart\n// Adding indexes during table creation\nFuture<void> _onCreate(Database db, int version) async {\n  await db.execute(\n    'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'\n  );\n  await db.execute('CREATE INDEX idx_user_email ON users(email)');\n  \n  // Using transactions for related operations\n  Future<void> createUserWithSettings(User user, UserSettings settings) async {\n    final db = await _dbHelper.database;\n    await db.transaction((txn) async {\n      int userId = await txn.insert('users', user.toMap());\n      settings.userId = userId;\n      await txn.insert('user_settings', settings.toMap());\n    });\n  }\n}\n```",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Profile Management System",
+        "description": "Implement the multi-profile management system allowing users to create, edit, and switch between profiles for different family members.",
+        "details": "1. Create Profile entity class with properties:\n   - id, name, photo, color, birthdate\n   - cycle length, phase durations\n   - privacy settings\n   - tracking preferences\n2. Implement ProfileRepository for CRUD operations\n3. Design UI for profile creation/editing:\n   - Profile photo selection/capture\n   - Color picker for profile color coding\n   - Form for personal details\n   - Cycle length configuration\n4. Create profile list view with color coding and photos\n5. Implement profile switching mechanism\n6. Add profile-specific settings page\n7. Create profile deletion with confirmation dialog\n8. Implement profile data isolation",
+        "testStrategy": "1. Unit tests for ProfileRepository\n2. Widget tests for profile creation/editing forms\n3. Integration tests for profile switching\n4. Verify profile data isolation\n5. Test profile deletion and data cleanup\n6. Usability testing for profile management workflow",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Profile Data Model",
+            "description": "Create the data model for user profiles with all necessary fields and serialization methods",
+            "dependencies": [],
+            "details": "1. Create a `Profile` class in `lib/models/profile.dart`:\n```dart\nclass Profile {\n  final String id;\n  final String name;\n  final String email;\n  final String photoUrl;\n  final Map<String, dynamic> preferences;\n  final DateTime createdAt;\n  final DateTime updatedAt;\n\n  Profile({\n    required this.id,\n    required this.name,\n    required this.email,\n    this.photoUrl = '',\n    this.preferences = const {},\n    DateTime? createdAt,\n    DateTime? updatedAt,\n  }) : \n    this.createdAt = createdAt ?? DateTime.now(),\n    this.updatedAt = updatedAt ?? DateTime.now();\n\n  // Convert Profile to Map for storage\n  Map<String, dynamic> toMap() {\n    return {\n      'id': id,\n      'name': name,\n      'email': email,\n      'photoUrl': photoUrl,\n      'preferences': preferences,\n      'createdAt': createdAt.toIso8601String(),\n      'updatedAt': updatedAt.toIso8601String(),\n    };\n  }\n\n  // Create Profile from Map\n  factory Profile.fromMap(Map<String, dynamic> map) {\n    return Profile(\n      id: map['id'],\n      name: map['name'],\n      email: map['email'],\n      photoUrl: map['photoUrl'] ?? '',\n      preferences: map['preferences'] ?? {},\n      createdAt: DateTime.parse(map['createdAt']),\n      updatedAt: DateTime.parse(map['updatedAt']),\n    );\n  }\n\n  // Create copy of Profile with some fields changed\n  Profile copyWith({\n    String? name,\n    String? email,\n    String? photoUrl,\n    Map<String, dynamic>? preferences,\n  }) {\n    return Profile(\n      id: this.id,\n      name: name ?? this.name,\n      email: email ?? this.email,\n      photoUrl: photoUrl ?? this.photoUrl,\n      preferences: preferences ?? this.preferences,\n      createdAt: this.createdAt,\n      updatedAt: DateTime.now(),\n    );\n  }\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement Profile CRUD Operations",
+            "description": "Create a service class to handle all profile operations including create, read, update, delete, and profile switching",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Create a `ProfileService` class in `lib/services/profile_service.dart`:\n```dart\nimport 'package:shared_preferences/shared_preferences.dart';\nimport 'dart:convert';\nimport '../models/profile.dart';\nimport 'package:uuid/uuid.dart';\n\nclass ProfileService {\n  static const String PROFILES_KEY = 'user_profiles';\n  static const String ACTIVE_PROFILE_KEY = 'active_profile_id';\n  \n  // Get all profiles\n  Future<List<Profile>> getAllProfiles() async {\n    final prefs = await SharedPreferences.getInstance();\n    final profilesJson = prefs.getStringList(PROFILES_KEY) ?? [];\n    \n    return profilesJson\n        .map((json) => Profile.fromMap(jsonDecode(json)))\n        .toList();\n  }\n  \n  // Get active profile\n  Future<Profile?> getActiveProfile() async {\n    final prefs = await SharedPreferences.getInstance();\n    final activeId = prefs.getString(ACTIVE_PROFILE_KEY);\n    \n    if (activeId == null) return null;\n    \n    final profiles = await getAllProfiles();\n    return profiles.firstWhere(\n      (profile) => profile.id == activeId,\n      orElse: () => null,\n    );\n  }\n  \n  // Create new profile\n  Future<Profile> createProfile(String name, String email, {String photoUrl = ''}) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profiles = await getAllProfiles();\n    \n    final newProfile = Profile(\n      id: Uuid().v4(),\n      name: name,\n      email: email,\n      photoUrl: photoUrl,\n    );\n    \n    profiles.add(newProfile);\n    await _saveProfiles(profiles);\n    \n    // If this is the first profile, make it active\n    if (profiles.length == 1) {\n      await setActiveProfile(newProfile.id);\n    }\n    \n    return newProfile;\n  }\n  \n  // Update profile\n  Future<Profile> updateProfile(Profile profile) async {\n    final profiles = await getAllProfiles();\n    final index = profiles.indexWhere((p) => p.id == profile.id);\n    \n    if (index >= 0) {\n      profiles[index] = profile.copyWith(\n        updatedAt: DateTime.now(),\n      );\n      await _saveProfiles(profiles);\n      return profiles[index];\n    }\n    \n    throw Exception('Profile not found');\n  }\n  \n  // Delete profile\n  Future<void> deleteProfile(String profileId) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profiles = await getAllProfiles();\n    final activeId = prefs.getString(ACTIVE_PROFILE_KEY);\n    \n    profiles.removeWhere((profile) => profile.id == profileId);\n    await _saveProfiles(profiles);\n    \n    // If active profile was deleted, set a new active profile\n    if (activeId == profileId && profiles.isNotEmpty) {\n      await setActiveProfile(profiles.first.id);\n    } else if (profiles.isEmpty) {\n      await prefs.remove(ACTIVE_PROFILE_KEY);\n    }\n  }\n  \n  // Set active profile\n  Future<void> setActiveProfile(String profileId) async {\n    final prefs = await SharedPreferences.getInstance();\n    await prefs.setString(ACTIVE_PROFILE_KEY, profileId);\n  }\n  \n  // Helper to save profiles to storage\n  Future<void> _saveProfiles(List<Profile> profiles) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profilesJson = profiles\n        .map((profile) => jsonEncode(profile.toMap()))\n        .toList();\n    \n    await prefs.setStringList(PROFILES_KEY, profilesJson);\n  }\n}\n```\n\n2. Add dependencies to pubspec.yaml:\n```yaml\ndependencies:\n  shared_preferences: ^2.0.15\n  uuid: ^3.0.6\n```",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Create UI for Profile Management",
+            "description": "Implement the user interface for profile management including profile list, creation, editing, and deletion screens",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Create a profile list screen in `lib/screens/profile_list_screen.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport '../models/profile.dart';\nimport '../services/profile_service.dart';\nimport 'profile_edit_screen.dart';\n\nclass ProfileListScreen extends StatefulWidget {\n  @override\n  _ProfileListScreenState createState() => _ProfileListScreenState();\n}\n\nclass _ProfileListScreenState extends State<ProfileListScreen> {\n  final ProfileService _profileService = ProfileService();\n  List<Profile> _profiles = [];\n  String? _activeProfileId;\n  bool _isLoading = true;\n\n  @override\n  void initState() {\n    super.initState();\n    _loadProfiles();\n  }\n\n  Future<void> _loadProfiles() async {\n    setState(() => _isLoading = true);\n    try {\n      final profiles = await _profileService.getAllProfiles();\n      final activeProfile = await _profileService.getActiveProfile();\n      \n      setState(() {\n        _profiles = profiles;\n        _activeProfileId = activeProfile?.id;\n        _isLoading = false;\n      });\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error loading profiles: $e')),\n      );\n      setState(() => _isLoading = false);\n    }\n  }\n\n  Future<void> _setActiveProfile(String profileId) async {\n    try {\n      await _profileService.setActiveProfile(profileId);\n      setState(() => _activeProfileId = profileId);\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Profile activated')),\n      );\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error activating profile: $e')),\n      );\n    }\n  }\n\n  Future<void> _deleteProfile(Profile profile) async {\n    try {\n      await _profileService.deleteProfile(profile.id);\n      await _loadProfiles();\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Profile deleted')),\n      );\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error deleting profile: $e')),\n      );\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('Profiles'),\n      ),\n      body: _isLoading\n          ? Center(child: CircularProgressIndicator())\n          : _profiles.isEmpty\n              ? Center(child: Text('No profiles yet. Create one!'))\n              : ListView.builder(\n                  itemCount: _profiles.length,\n                  itemBuilder: (context, index) {\n                    final profile = _profiles[index];\n                    final isActive = profile.id == _activeProfileId;\n                    \n                    return ListTile(\n                      leading: CircleAvatar(\n                        backgroundImage: profile.photoUrl.isNotEmpty\n                            ? NetworkImage(profile.photoUrl)\n                            : null,\n                        child: profile.photoUrl.isEmpty\n                            ? Text(profile.name[0])\n                            : null,\n                      ),\n                      title: Text(profile.name),\n                      subtitle: Text(profile.email),\n                      trailing: Row(\n                        mainAxisSize: MainAxisSize.min,\n                        children: [\n                          if (isActive)\n                            Chip(\n                              label: Text('Active'),\n                              backgroundColor: Colors.green[100],\n                            )\n                          else\n                            TextButton(\n                              onPressed: () => _setActiveProfile(profile.id),\n                              child: Text('Activate'),\n                            ),\n                          IconButton(\n                            icon: Icon(Icons.edit),\n                            onPressed: () async {\n                              await Navigator.push(\n                                context,\n                                MaterialPageRoute(\n                                  builder: (context) => ProfileEditScreen(\n                                    profile: profile,\n                                  ),\n                                ),\n                              );\n                              _loadProfiles();\n                            },\n                          ),\n                          IconButton(\n                            icon: Icon(Icons.delete),\n                            onPressed: () => showDialog(\n                              context: context,\n                              builder: (context) => AlertDialog(\n                                title: Text('Delete Profile'),\n                                content: Text(\n                                    'Are you sure you want to delete ${profile.name}?'),\n                                actions: [\n                                  TextButton(\n                                    onPressed: () => Navigator.pop(context),\n                                    child: Text('Cancel'),\n                                  ),\n                                  TextButton(\n                                    onPressed: () {\n                                      Navigator.pop(context);\n                                      _deleteProfile(profile);\n                                    },\n                                    child: Text('Delete'),\n                                    style: TextButton.styleFrom(\n                                      foregroundColor: Colors.red,\n                                    ),\n                                  ),\n                                ],\n                              ),\n                            ),\n                          ),\n                        ],\n                      ),\n                    );\n                  },\n                ),\n      floatingActionButton: FloatingActionButton(\n        onPressed: () async {\n          await Navigator.push(\n            context,\n            MaterialPageRoute(\n              builder: (context) => ProfileEditScreen(),\n            ),\n          );\n          _loadProfiles();\n        },\n        child: Icon(Icons.add),\n        tooltip: 'Add Profile',\n      ),\n    );\n  }\n}\n```\n\n2. Create a profile edit screen in `lib/screens/profile_edit_screen.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport '../models/profile.dart';\nimport '../services/profile_service.dart';\n\nclass ProfileEditScreen extends StatefulWidget {\n  final Profile? profile;\n\n  ProfileEditScreen({this.profile});\n\n  @override\n  _ProfileEditScreenState createState() => _ProfileEditScreenState();\n}\n\nclass _ProfileEditScreenState extends State<ProfileEditScreen> {\n  final _formKey = GlobalKey<FormState>();\n  final _nameController = TextEditingController();\n  final _emailController = TextEditingController();\n  final _photoUrlController = TextEditingController();\n  final ProfileService _profileService = ProfileService();\n  bool _isLoading = false;\n\n  @override\n  void initState() {\n    super.initState();\n    if (widget.profile != null) {\n      _nameController.text = widget.profile!.name;\n      _emailController.text = widget.profile!.email;\n      _photoUrlController.text = widget.profile!.photoUrl;\n    }\n  }\n\n  @override\n  void dispose() {\n    _nameController.dispose();\n    _emailController.dispose();\n    _photoUrlController.dispose();\n    super.dispose();\n  }\n\n  Future<void> _saveProfile() async {\n    if (!_formKey.currentState!.validate()) return;\n\n    setState(() => _isLoading = true);\n\n    try {\n      if (widget.profile == null) {\n        // Create new profile\n        await _profileService.createProfile(\n          _nameController.text,\n          _emailController.text,\n          photoUrl: _photoUrlController.text,\n        );\n      } else {\n        // Update existing profile\n        final updatedProfile = widget.profile!.copyWith(\n          name: _nameController.text,\n          email: _emailController.text,\n          photoUrl: _photoUrlController.text,\n        );\n        await _profileService.updateProfile(updatedProfile);\n      }\n\n      Navigator.pop(context);\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error saving profile: $e')),\n      );\n    } finally {\n      setState(() => _isLoading = false);\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text(widget.profile == null ? 'Create Profile' : 'Edit Profile'),\n      ),\n      body: _isLoading\n          ? Center(child: CircularProgressIndicator())\n          : Padding(\n              padding: const EdgeInsets.all(16.0),\n              child: Form(\n                key: _formKey,\n                child: ListView(\n                  children: [\n                    if (_photoUrlController.text.isNotEmpty)\n                      Padding(\n                        padding: const EdgeInsets.only(bottom: 20.0),\n                        child: CircleAvatar(\n                          radius: 50,\n                          backgroundImage: NetworkImage(_photoUrlController.text),\n                        ),\n                      ),\n                    TextFormField(\n                      controller: _nameController,\n                      decoration: InputDecoration(\n                        labelText: 'Name',\n                        border: OutlineInputBorder(),\n                      ),\n                      validator: (value) {\n                        if (value == null || value.isEmpty) {\n                          return 'Please enter a name';\n                        }\n                        return null;\n                      },\n                    ),\n                    SizedBox(height: 16),\n                    TextFormField(\n                      controller: _emailController,\n                      decoration: InputDecoration(\n                        labelText: 'Email',\n                        border: OutlineInputBorder(),\n                      ),\n                      validator: (value) {\n                        if (value == null || value.isEmpty) {\n                          return 'Please enter an email';\n                        }\n                        if (!value.contains('@')) {\n                          return 'Please enter a valid email';\n                        }\n                        return null;\n                      },\n                    ),\n                    SizedBox(height: 16),\n                    TextFormField(\n                      controller: _photoUrlController,\n                      decoration: InputDecoration(\n                        labelText: 'Photo URL (optional)',\n                        border: OutlineInputBorder(),\n                      ),\n                    ),\n                    SizedBox(height: 24),\n                    ElevatedButton(\n                      onPressed: _saveProfile,\n                      child: Padding(\n                        padding: const EdgeInsets.all(12.0),\n                        child: Text(\n                          'Save Profile',\n                          style: TextStyle(fontSize: 16),\n                        ),\n                      ),\n                    ),\n                  ],\n                ),\n              ),\n            ),\n    );\n  }\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Profile Switching Mechanism",
+            "description": "Create a provider for profile state management and implement the profile switching functionality throughout the app",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "1. Create a profile provider in `lib/providers/profile_provider.dart`:\n```dart\nimport 'package:flutter/foundation.dart';\nimport '../models/profile.dart';\nimport '../services/profile_service.dart';\n\nclass ProfileProvider extends ChangeNotifier {\n  final ProfileService _profileService = ProfileService();\n  \n  Profile? _activeProfile;\n  List<Profile> _profiles = [];\n  bool _isLoading = false;\n  \n  Profile? get activeProfile => _activeProfile;\n  List<Profile> get profiles => _profiles;\n  bool get isLoading => _isLoading;\n  \n  ProfileProvider() {\n    _initializeProfiles();\n  }\n  \n  Future<void> _initializeProfiles() async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      await _loadProfiles();\n      await _loadActiveProfile();\n    } catch (e) {\n      print('Error initializing profiles: $e');\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  Future<void> _loadProfiles() async {\n    _profiles = await _profileService.getAllProfiles();\n  }\n  \n  Future<void> _loadActiveProfile() async {\n    _activeProfile = await _profileService.getActiveProfile();\n  }\n  \n  Future<void> refreshProfiles() async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      await _loadProfiles();\n      await _loadActiveProfile();\n    } catch (e) {\n      print('Error refreshing profiles: $e');\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  Future<void> switchProfile(String profileId) async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      await _profileService.setActiveProfile(profileId);\n      await _loadActiveProfile();\n    } catch (e) {\n      print('Error switching profiles: $e');\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  Future<Profile> createProfile(String name, String email, {String photoUrl = ''}) async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      final newProfile = await _profileService.createProfile(name, email, photoUrl: photoUrl);\n      await refreshProfiles();\n      return newProfile;\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  Future<Profile> updateProfile(Profile profile) async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      final updatedProfile = await _profileService.updateProfile(profile);\n      await refreshProfiles();\n      return updatedProfile;\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  Future<void> deleteProfile(String profileId) async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      await _profileService.deleteProfile(profileId);\n      await refreshProfiles();\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n}\n```\n\n2. Update `main.dart` to include the provider:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:provider/provider.dart';\nimport 'providers/profile_provider.dart';\nimport 'screens/profile_list_screen.dart';\n\nvoid main() {\n  runApp(MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return MultiProvider(\n      providers: [\n        ChangeNotifierProvider(create: (_) => ProfileProvider()),\n      ],\n      child: MaterialApp(\n        title: 'Profile Manager',\n        theme: ThemeData(\n          primarySwatch: Colors.blue,\n          visualDensity: VisualDensity.adaptivePlatformDensity,\n        ),\n        home: ProfileListScreen(),\n      ),\n    );\n  }\n}\n```\n\n3. Create a profile switcher widget in `lib/widgets/profile_switcher.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:provider/provider.dart';\nimport '../providers/profile_provider.dart';\nimport '../screens/profile_list_screen.dart';\n\nclass ProfileSwitcher extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return Consumer<ProfileProvider>(\n      builder: (context, profileProvider, child) {\n        final activeProfile = profileProvider.activeProfile;\n        \n        if (profileProvider.isLoading) {\n          return CircularProgressIndicator();\n        }\n        \n        if (activeProfile == null) {\n          return TextButton(\n            onPressed: () {\n              Navigator.push(\n                context,\n                MaterialPageRoute(builder: (context) => ProfileListScreen()),\n              );\n            },\n            child: Text('Create Profile'),\n          );\n        }\n        \n        return InkWell(\n          onTap: () {\n            showModalBottomSheet(\n              context: context,\n              builder: (context) => _buildProfileSelector(context),\n            );\n          },\n          child: Padding(\n            padding: const EdgeInsets.symmetric(horizontal: 8.0),\n            child: Row(\n              mainAxisSize: MainAxisSize.min,\n              children: [\n                CircleAvatar(\n                  radius: 16,\n                  backgroundImage: activeProfile.photoUrl.isNotEmpty\n                      ? NetworkImage(activeProfile.photoUrl)\n                      : null,\n                  child: activeProfile.photoUrl.isEmpty\n                      ? Text(activeProfile.name[0])\n                      : null,\n                ),\n                SizedBox(width: 8),\n                Text(activeProfile.name),\n                Icon(Icons.arrow_drop_down),\n              ],\n            ),\n          ),\n        );\n      },\n    );\n  }\n  \n  Widget _buildProfileSelector(BuildContext context) {\n    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n    \n    return Column(\n      mainAxisSize: MainAxisSize.min,\n      children: [\n        ListTile(\n          title: Text(\n            'Switch Profile',\n            style: TextStyle(fontWeight: FontWeight.bold),\n          ),\n        ),\n        Divider(),\n        ...profileProvider.profiles.map((profile) {\n          final isActive = profile.id == profileProvider.activeProfile?.id;\n          \n          return ListTile(\n            leading: CircleAvatar(\n              backgroundImage: profile.photoUrl.isNotEmpty\n                  ? NetworkImage(profile.photoUrl)\n                  : null,\n              child: profile.photoUrl.isEmpty ? Text(profile.name[0]) : null,\n            ),\n            title: Text(profile.name),\n            subtitle: Text(profile.email),\n            trailing: isActive\n                ? Icon(Icons.check, color: Colors.green)\n                : null,\n            onTap: isActive\n                ? null\n                : () {\n                    profileProvider.switchProfile(profile.id);\n                    Navigator.pop(context);\n                  },\n          );\n        }).toList(),\n        Divider(),\n        ListTile(\n          leading: Icon(Icons.settings),\n          title: Text('Manage Profiles'),\n          onTap: () {\n            Navigator.pop(context);\n            Navigator.push(\n              context,\n              MaterialPageRoute(builder: (context) => ProfileListScreen()),\n            );\n          },\n        ),\n      ],\n    );\n  }\n}\n```\n\n4. Add the profile switcher to your app's main drawer or app bar:\n```dart\nimport 'package:flutter/material.dart';\nimport 'widgets/profile_switcher.dart';\n\nclass MyHomePage extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('My App'),\n        actions: [\n          ProfileSwitcher(),\n        ],\n      ),\n      drawer: Drawer(\n        child: ListView(\n          children: [\n            DrawerHeader(\n              child: ProfileSwitcher(),\n            ),\n            // Other drawer items\n          ],\n        ),\n      ),\n      body: Center(\n        child: Text('Main App Content'),\n      ),\n    );\n  }\n}\n```\n\n5. Add provider dependency to pubspec.yaml:\n```yaml\ndependencies:\n  provider: ^6.0.3\n```",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement Data Isolation Between Profiles",
+            "description": "Create a mechanism to isolate data between different profiles, ensuring each profile has its own separate data",
+            "dependencies": [
+              1,
+              2,
+              4
+            ],
+            "details": "1. Create a data isolation service in `lib/services/data_isolation_service.dart`:\n```dart\nimport 'package:shared_preferences/shared_preferences.dart';\nimport '../models/profile.dart';\n\nclass DataIsolationService {\n  // Prefix for profile-specific data\n  static String getProfilePrefix(String profileId) => 'profile_${profileId}_';\n  \n  // Get profile-specific key\n  static String getProfileKey(String profileId, String key) {\n    return '${getProfilePrefix(profileId)}$key';\n  }\n  \n  // Save data for specific profile\n  static Future<bool> saveProfileData(String profileId, String key, dynamic value) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profileKey = getProfileKey(profileId, key);\n    \n    if (value is String) {\n      return prefs.setString(profileKey, value);\n    } else if (value is int) {\n      return prefs.setInt(profileKey, value);\n    } else if (value is double) {\n      return prefs.setDouble(profileKey, value);\n    } else if (value is bool) {\n      return prefs.setBool(profileKey, value);\n    } else if (value is List<String>) {\n      return prefs.setStringList(profileKey, value);\n    } else {\n      throw ArgumentError('Unsupported value type: ${value.runtimeType}');\n    }\n  }\n  \n  // Get data for specific profile\n  static Future<T?> getProfileData<T>(String profileId, String key) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profileKey = getProfileKey(profileId, key);\n    \n    return prefs.get(profileKey) as T?;\n  }\n  \n  // Remove data for specific profile\n  static Future<bool> removeProfileData(String profileId, String key) async {\n    final prefs = await SharedPreferences.getInstance();\n    final profileKey = getProfileKey(profileId, key);\n    \n    return prefs.remove(profileKey);\n  }\n  \n  // Clear all data for a profile\n  static Future<void> clearProfileData(String profileId) async {\n    final prefs = await SharedPreferences.getInstance();\n    final prefix = getProfilePrefix(profileId);\n    \n    final keys = prefs.getKeys();\n    final profileKeys = keys.where((key) => key.startsWith(prefix));\n    \n    for (final key in profileKeys) {\n      await prefs.remove(key);\n    }\n  }\n}\n```\n\n2. Create a profile-aware data service in `lib/services/profile_data_service.dart`:\n```dart\nimport 'package:provider/provider.dart';\nimport 'package:flutter/material.dart';\nimport '../providers/profile_provider.dart';\nimport 'data_isolation_service.dart';\n\nclass ProfileDataService {\n  final BuildContext context;\n  \n  ProfileDataService(this.context);\n  \n  // Get the current active profile ID\n  String? get _activeProfileId {\n    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n    return profileProvider.activeProfile?.id;\n  }\n  \n  // Save data for current profile\n  Future<bool> saveData(String key, dynamic value) async {\n    final profileId = _activeProfileId;\n    if (profileId == null) {\n      throw Exception('No active profile');\n    }\n    \n    return DataIsolationService.saveProfileData(profileId, key, value);\n  }\n  \n  // Get data for current profile\n  Future<T?> getData<T>(String key) async {\n    final profileId = _activeProfileId;\n    if (profileId == null) {\n      throw Exception('No active profile');\n    }\n    \n    return DataIsolationService.getProfileData<T>(profileId, key);\n  }\n  \n  // Remove data for current profile\n  Future<bool> removeData(String key) async {\n    final profileId = _activeProfileId;\n    if (profileId == null) {\n      throw Exception('No active profile');\n    }\n    \n    return DataIsolationService.removeProfileData(profileId, key);\n  }\n  \n  // Clear all data for current profile\n  Future<void> clearAllData() async {\n    final profileId = _activeProfileId;\n    if (profileId == null) {\n      throw Exception('No active profile');\n    }\n    \n    return DataIsolationService.clearProfileData(profileId);\n  }\n}\n```\n\n3. Create a profile data provider extension in `lib/extensions/profile_data_extension.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport '../services/profile_data_service.dart';\n\nextension ProfileDataExtension on BuildContext {\n  // Get the profile data service for the current context\n  ProfileDataService get profileData => ProfileDataService(this);\n}\n```\n\n4. Example usage in a widget:\n```dart\nimport 'package:flutter/material.dart';\nimport '../extensions/profile_data_extension.dart';\n\nclass ProfileSpecificSettingsScreen extends StatefulWidget {\n  @override\n  _ProfileSpecificSettingsScreenState createState() => _ProfileSpecificSettingsScreenState();\n}\n\nclass _ProfileSpecificSettingsScreenState extends State<ProfileSpecificSettingsScreen> {\n  bool _isDarkMode = false;\n  String _username = '';\n  bool _isLoading = true;\n  \n  @override\n  void initState() {\n    super.initState();\n    _loadSettings();\n  }\n  \n  Future<void> _loadSettings() async {\n    setState(() => _isLoading = true);\n    \n    try {\n      // Load profile-specific settings\n      _isDarkMode = await context.profileData.getData<bool>('dark_mode') ?? false;\n      _username = await context.profileData.getData<String>('username') ?? '';\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error loading settings: $e')),\n      );\n    } finally {\n      setState(() => _isLoading = false);\n    }\n  }\n  \n  Future<void> _saveSettings() async {\n    try {\n      await context.profileData.saveData('dark_mode', _isDarkMode);\n      await context.profileData.saveData('username', _username);\n      \n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Settings saved')),\n      );\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error saving settings: $e')),\n      );\n    }\n  }\n  \n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: Text('Profile Settings'),\n      ),\n      body: _isLoading\n          ? Center(child: CircularProgressIndicator())\n          : Padding(\n              padding: const EdgeInsets.all(16.0),\n              child: Column(\n                crossAxisAlignment: CrossAxisAlignment.start,\n                children: [\n                  TextField(\n                    decoration: InputDecoration(\n                      labelText: 'Username',\n                      border: OutlineInputBorder(),\n                    ),\n                    value: _username,\n                    onChanged: (value) => setState(() => _username = value),\n                  ),\n                  SizedBox(height: 16),\n                  SwitchListTile(\n                    title: Text('Dark Mode'),\n                    value: _isDarkMode,\n                    onChanged: (value) => setState(() => _isDarkMode = value),\n                  ),\n                  SizedBox(height: 24),\n                  ElevatedButton(\n                    onPressed: _saveSettings,\n                    child: Text('Save Settings'),\n                  ),\n                ],\n              ),\n            ),\n    );\n  }\n}\n```",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Implement Profile Avatar and Theme Customization",
+            "description": "Add functionality for users to customize their profile avatar and theme preferences",
+            "dependencies": [
+              1,
+              2,
+              3,
+              5
+            ],
+            "details": "1. Update the Profile model in `lib/models/profile.dart` to include theme preferences:\n```dart\nclass Profile {\n  final String id;\n  final String name;\n  final String email;\n  final String photoUrl;\n  final Map<String, dynamic> preferences;\n  final ThemePreferences themePreferences;\n  final DateTime createdAt;\n  final DateTime updatedAt;\n\n  Profile({\n    required this.id,\n    required this.name,\n    required this.email,\n    this.photoUrl = '',\n    this.preferences = const {},\n    ThemePreferences? themePreferences,\n    DateTime? createdAt,\n    DateTime? updatedAt,\n  }) : \n    this.themePreferences = themePreferences ?? ThemePreferences(),\n    this.createdAt = createdAt ?? DateTime.now(),\n    this.updatedAt = updatedAt ?? DateTime.now();\n\n  // Convert Profile to Map for storage\n  Map<String, dynamic> toMap() {\n    return {\n      'id': id,\n      'name': name,\n      'email': email,\n      'photoUrl': photoUrl,\n      'preferences': preferences,\n      'themePreferences': themePreferences.toMap(),\n      'createdAt': createdAt.toIso8601String(),\n      'updatedAt': updatedAt.toIso8601String(),\n    };\n  }\n\n  // Create Profile from Map\n  factory Profile.fromMap(Map<String, dynamic> map) {\n    return Profile(\n      id: map['id'],\n      name: map['name'],\n      email: map['email'],\n      photoUrl: map['photoUrl'] ?? '',\n      preferences: map['preferences'] ?? {},\n      themePreferences: map['themePreferences'] != null \n          ? ThemePreferences.fromMap(map['themePreferences']) \n          : null,\n      createdAt: DateTime.parse(map['createdAt']),\n      updatedAt: DateTime.parse(map['updatedAt']),\n    );\n  }\n\n  // Create copy of Profile with some fields changed\n  Profile copyWith({\n    String? name,\n    String? email,\n    String? photoUrl,\n    Map<String, dynamic>? preferences,\n    ThemePreferences? themePreferences,\n  }) {\n    return Profile(\n      id: this.id,\n      name: name ?? this.name,\n      email: email ?? this.email,\n      photoUrl: photoUrl ?? this.photoUrl,\n      preferences: preferences ?? this.preferences,\n      themePreferences: themePreferences ?? this.themePreferences,\n      createdAt: this.createdAt,\n      updatedAt: DateTime.now(),\n    );\n  }\n}\n\nclass ThemePreferences {\n  final bool isDarkMode;\n  final int primaryColorValue;\n  final int accentColorValue;\n  final double fontSize;\n\n  ThemePreferences({\n    this.isDarkMode = false,\n    this.primaryColorValue = 0xFF2196F3, // Default blue\n    this.accentColorValue = 0xFF03DAC5,  // Default teal\n    this.fontSize = 1.0, // Default scale factor\n  });\n\n  // Convert to Color objects\n  Color get primaryColor => Color(primaryColorValue);\n  Color get accentColor => Color(accentColorValue);\n\n  // Convert to Map\n  Map<String, dynamic> toMap() {\n    return {\n      'isDarkMode': isDarkMode,\n      'primaryColorValue': primaryColorValue,\n      'accentColorValue': accentColorValue,\n      'fontSize': fontSize,\n    };\n  }\n\n  // Create from Map\n  factory ThemePreferences.fromMap(Map<String, dynamic> map) {\n    return ThemePreferences(\n      isDarkMode: map['isDarkMode'] ?? false,\n      primaryColorValue: map['primaryColorValue'] ?? 0xFF2196F3,\n      accentColorValue: map['accentColorValue'] ?? 0xFF03DAC5,\n      fontSize: map['fontSize'] ?? 1.0,\n    );\n  }\n\n  // Create copy with some fields changed\n  ThemePreferences copyWith({\n    bool? isDarkMode,\n    int? primaryColorValue,\n    int? accentColorValue,\n    double? fontSize,\n  }) {\n    return ThemePreferences(\n      isDarkMode: isDarkMode ?? this.isDarkMode,\n      primaryColorValue: primaryColorValue ?? this.primaryColorValue,\n      accentColorValue: accentColorValue ?? this.accentColorValue,\n      fontSize: fontSize ?? this.fontSize,\n    );\n  }\n}\n```\n\n2. Create a theme provider in `lib/providers/theme_provider.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:provider/provider.dart';\nimport '../models/profile.dart';\nimport 'profile_provider.dart';\n\nclass ThemeProvider extends ChangeNotifier {\n  ThemePreferences _themePreferences = ThemePreferences();\n  \n  ThemePreferences get themePreferences => _themePreferences;\n  \n  // Initialize theme from active profile\n  void updateFromProfile(Profile? profile) {\n    if (profile != null) {\n      _themePreferences = profile.themePreferences;\n      notifyListeners();\n    }\n  }\n  \n  // Update theme preferences\n  Future<void> updateThemePreferences(ThemePreferences preferences, BuildContext context) async {\n    _themePreferences = preferences;\n    notifyListeners();\n    \n    // Update the profile with new theme preferences\n    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n    final activeProfile = profileProvider.activeProfile;\n    \n    if (activeProfile != null) {\n      final updatedProfile = activeProfile.copyWith(\n        themePreferences: preferences,\n      );\n      await profileProvider.updateProfile(updatedProfile);\n    }\n  }\n  \n  // Get the current theme data\n  ThemeData getThemeData() {\n    return _themePreferences.isDarkMode\n        ? ThemeData.dark().copyWith(\n            primaryColor: _themePreferences.primaryColor,\n            colorScheme: ColorScheme.dark(\n              primary: _themePreferences.primaryColor,\n              secondary: _themePreferences.accentColor,\n            ),\n            textTheme: ThemeData.dark().textTheme.apply(\n              fontSizeFactor: _themePreferences.fontSize,\n            ),\n          )\n        : ThemeData.light().copyWith(\n            primaryColor: _themePreferences.primaryColor,\n            colorScheme: ColorScheme.light(\n              primary: _themePreferences.primaryColor,\n              secondary: _themePreferences.accentColor,\n            ),\n            textTheme: ThemeData.light().textTheme.apply(\n              fontSizeFactor: _themePreferences.fontSize,\n            ),\n          );\n  }\n}\n```\n\n3. Create a profile appearance settings screen in `lib/screens/profile_appearance_screen.dart`:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:provider/provider.dart';\nimport '../models/profile.dart';\nimport '../providers/profile_provider.dart';\nimport '../providers/theme_provider.dart';\nimport 'package:image_picker/image_picker.dart';\nimport 'dart:io';\nimport 'package:path_provider/path_provider.dart';\nimport 'dart:math' as math;\n\nclass ProfileAppearanceScreen extends StatefulWidget {\n  @override\n  _ProfileAppearanceScreenState createState() => _ProfileAppearanceScreenState();\n}\n\nclass _ProfileAppearanceScreenState extends State<ProfileAppearanceScreen> {\n  final List<Color> _colorOptions = [\n    Colors.blue,\n    Colors.red,\n    Colors.green,\n    Colors.purple,\n    Colors.orange,\n    Colors.teal,\n    Colors.pink,\n    Colors.indigo,\n  ];\n  \n  late ThemePreferences _themePreferences;\n  bool _isLoading = false;\n  final ImagePicker _picker = ImagePicker();\n  \n  @override\n  void initState() {\n    super.initState();\n    _themePreferences = Provider.of<ThemeProvider>(context, listen: false).themePreferences;\n  }\n  \n  Future<void> _saveThemePreferences() async {\n    setState(() => _isLoading = true);\n    \n    try {\n      await Provider.of<ThemeProvider>(context, listen: false)\n          .updateThemePreferences(_themePreferences, context);\n      \n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Appearance settings saved')),\n      );\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error saving appearance settings: $e')),\n      );\n    } finally {\n      setState(() => _isLoading = false);\n    }\n  }\n  \n  Future<void> _pickProfileImage() async {\n    try {\n      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);\n      if (image == null) return;\n      \n      // Save image to app documents directory\n      final appDir = await getApplicationDocumentsDirectory();\n      final profileId = Provider.of<ProfileProvider>(context, listen: false).activeProfile?.id;\n      if (profileId == null) return;\n      \n      final fileName = 'profile_${profileId}_${math.Random().nextInt(10000)}.jpg';\n      final savedImage = File('${appDir.path}/$fileName');\n      await savedImage.writeAsBytes(await image.readAsBytes());\n      \n      // Update profile with new image path\n      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n      final activeProfile = profileProvider.activeProfile;\n      if (activeProfile != null) {\n        final updatedProfile = activeProfile.copyWith(\n          photoUrl: savedImage.path,\n        );\n        await profileProvider.updateProfile(updatedProfile);\n        \n        ScaffoldMessenger.of(context).showSnackBar(\n          SnackBar(content: Text('Profile picture updated')),\n        );\n      }\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Error updating profile picture: $e')),\n      );\n    }\n  }\n  \n  @override\n  Widget build(BuildContext context) {\n    final profileProvider = Provider.of<ProfileProvider>(context);\n    final activeProfile = profileProvider.activeProfile;\n    \n    return Scaffold(\n      appBar: AppBar(\n        title: Text('Appearance Settings'),\n      ),\n      body: _isLoading || activeProfile == null\n          ? Center(child: CircularProgressIndicator())\n          : SingleChildScrollView(\n              padding: EdgeInsets.all(16.0),\n              child: Column(\n                crossAxisAlignment: CrossAxisAlignment.start,\n                children: [\n                  // Profile Picture Section\n                  Center(\n                    child: Column(\n                      children: [\n                        GestureDetector(\n                          onTap: _pickProfileImage,\n                          child: Stack(\n                            children: [\n                              CircleAvatar(\n                                radius: 60,\n                                backgroundImage: activeProfile.photoUrl.isNotEmpty\n                                    ? activeProfile.photoUrl.startsWith('http')\n                                        ? NetworkImage(activeProfile.photoUrl)\n                                        : FileImage(File(activeProfile.photoUrl)) as ImageProvider\n                                    : null,\n                                child: activeProfile.photoUrl.isEmpty\n                                    ? Text(\n                                        activeProfile.name[0].toUpperCase(),\n                                        style: TextStyle(fontSize: 40),\n                                      )\n                                    : null,\n                              ),\n                              Positioned(\n                                bottom: 0,\n                                right: 0,\n                                child: Container(\n                                  padding: EdgeInsets.all(4),\n                                  decoration: BoxDecoration(\n                                    color: Theme.of(context).primaryColor,\n                                    shape: BoxShape.circle,\n                                  ),\n                                  child: Icon(\n                                    Icons.camera_alt,\n                                    color: Colors.white,\n                                    size: 20,\n                                  ),\n                                ),\n                              ),\n                            ],\n                          ),\n                        ),\n                        SizedBox(height: 8),\n                        Text(\n                          'Tap to change profile picture',\n                          style: TextStyle(color: Colors.grey),\n                        ),\n                      ],\n                    ),\n                  ),\n                  \n                  SizedBox(height: 32),\n                  Text(\n                    'Theme Settings',\n                    style: Theme.of(context).textTheme.headline6,\n                  ),\n                  SizedBox(height: 16),\n                  \n                  // Dark Mode Toggle\n                  SwitchListTile(\n                    title: Text('Dark Mode'),\n                    value: _themePreferences.isDarkMode,\n                    onChanged: (value) {\n                      setState(() {\n                        _themePreferences = _themePreferences.copyWith(\n                          isDarkMode: value,\n                        );\n                      });\n                    },\n                  ),\n                  \n                  SizedBox(height: 16),\n                  Text('Primary Color'),\n                  SizedBox(height: 8),\n                  \n                  // Color Selection\n                  Wrap(\n                    spacing: 10,\n                    runSpacing: 10,\n                    children: _colorOptions.map((color) {\n                      return GestureDetector(\n                        onTap: () {\n                          setState(() {\n                            _themePreferences = _themePreferences.copyWith(\n                              primaryColorValue: color.value,\n                            );\n                          });\n                        },\n                        child: Container(\n                          width: 50,\n                          height: 50,\n                          decoration: BoxDecoration(\n                            color: color,\n                            shape: BoxShape.circle,\n                            border: Border.all(\n                              color: _themePreferences.primaryColorValue == color.value\n                                  ? Colors.white\n                                  : Colors.transparent,\n                              width: 3,\n                            ),\n                          ),\n                          child: _themePreferences.primaryColorValue == color.value\n                              ? Icon(Icons.check, color: Colors.white)\n                              : null,\n                        ),\n                      );\n                    }).toList(),\n                  ),\n                  \n                  SizedBox(height: 24),\n                  Text('Accent Color'),\n                  SizedBox(height: 8),\n                  \n                  // Accent Color Selection\n                  Wrap(\n                    spacing: 10,\n                    runSpacing: 10,\n                    children: _colorOptions.map((color) {\n                      return GestureDetector(\n                        onTap: () {\n                          setState(() {\n                            _themePreferences = _themePreferences.copyWith(\n                              accentColorValue: color.value,\n                            );\n                          });\n                        },\n                        child: Container(\n                          width: 50,\n                          height: 50,\n                          decoration: BoxDecoration(\n                            color: color,\n                            shape: BoxShape.circle,\n                            border: Border.all(\n                              color: _themePreferences.accentColorValue == color.value\n                                  ? Colors.white\n                                  : Colors.transparent,\n                              width: 3,\n                            ),\n                          ),\n                          child: _themePreferences.accentColorValue == color.value\n                              ? Icon(Icons.check, color: Colors.white)\n                              : null,\n                        ),\n                      );\n                    }).toList(),\n                  ),\n                  \n                  SizedBox(height: 24),\n                  Text('Font Size'),\n                  \n                  // Font Size Slider\n                  Slider(\n                    value: _themePreferences.fontSize,\n                    min: 0.8,\n                    max: 1.4,\n                    divisions: 6,\n                    label: _themePreferences.fontSize.toStringAsFixed(1) + 'x',\n                    onChanged: (value) {\n                      setState(() {\n                        _themePreferences = _themePreferences.copyWith(\n                          fontSize: value,\n                        );\n                      });\n                    },\n                  ),\n                  \n                  SizedBox(height: 32),\n                  Center(\n                    child: ElevatedButton(\n                      onPressed: _saveThemePreferences,\n                      child: Padding(\n                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),\n                        child: Text('Save Appearance Settings'),\n                      ),\n                    ),\n                  ),\n                ],\n              ),\n            ),\n    );\n  }\n}\n```\n\n4. Update `main.dart` to include the theme provider:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:provider/provider.dart';\nimport 'providers/profile_provider.dart';\nimport 'providers/theme_provider.dart';\nimport 'screens/profile_list_screen.dart';\n\nvoid main() {\n  runApp(MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    return MultiProvider(\n      providers: [\n        ChangeNotifierProvider(create: (_) => ProfileProvider()),\n        ChangeNotifierProvider(create: (_) => ThemeProvider()),\n      ],\n      child: ProfileThemeConsumer(),\n    );\n  }\n}\n\nclass ProfileThemeConsumer extends StatefulWidget {\n  @override\n  _ProfileThemeConsumerState createState() => _ProfileThemeConsumerState();\n}\n\nclass _ProfileThemeConsumerState extends State<ProfileThemeConsumer> {\n  @override\n  void initState() {\n    super.initState();\n    // Listen for profile changes to update theme\n    Future.delayed(Duration.zero, () {\n      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n      profileProvider.addListener(_updateThemeFromProfile);\n    });\n  }\n  \n  @override\n  void dispose() {\n    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n    profileProvider.removeListener(_updateThemeFromProfile);\n    super.dispose();\n  }\n  \n  void _updateThemeFromProfile() {\n    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);\n    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);\n    themeProvider.updateFromProfile(profileProvider.activeProfile);\n  }\n  \n  @override\n  Widget build(BuildContext context) {\n    return Consumer<ThemeProvider>(\n      builder: (context, themeProvider, child) {\n        return MaterialApp(\n          title: 'Profile Manager',\n          theme: themeProvider.getThemeData(),\n          home: ProfileListScreen(),\n        );\n      },\n    );\n  }\n}\n```\n\n5. Add dependencies to pubspec.yaml:\n```yaml\ndependencies:\n  image_picker: ^0.8.5+3\n  path_provider: ^2.0.11\n```",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Cycle Tracking Calendar Implementation",
+        "description": "Develop the calendar-based tracking interface with visual phase indicators and the ability to log period start/end dates.",
+        "details": "1. Integrate table_calendar package\n2. Create custom calendar day builders to show:\n   - Phase colors (Menstrual, Follicular, Ovulation, Luteal)\n   - Period days with special indicators\n   - Current day highlight\n   - Predicted vs. actual days\n3. Implement gesture handling for date selection\n4. Create period logging interface:\n   - Start/end date selection\n   - Flow intensity tracking\n   - Notes field\n5. Implement cycle calculation logic based on logged periods\n6. Add month navigation and 3-month forward view\n7. Create cycle history visualization\n8. Implement phase transition calculations",
+        "testStrategy": "1. Widget tests for calendar rendering\n2. Unit tests for cycle calculation logic\n3. Integration tests for period logging workflow\n4. Test edge cases (irregular cycles, missing data)\n5. Verify phase visualization accuracy\n6. Test calendar navigation and date selection",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up table_calendar package and basic calendar integration",
+            "description": "Initialize and configure the table_calendar package to display a functional calendar in the app",
+            "dependencies": [],
+            "details": "1. Add table_calendar dependency to pubspec.yaml\n2. Create a CalendarScreen widget with TableCalendar implementation\n3. Configure basic calendar parameters (firstDay, lastDay, focusedDay)\n4. Implement calendar format toggle (month, 2-week, week views)\n5. Set up calendar styling with app theme colors\n6. Add navigation to the calendar screen from the main menu\n7. Test basic calendar functionality (month navigation, format switching)",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement period logging interface",
+            "description": "Create UI components for users to log period start/end dates and symptoms",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Design a period logging bottom sheet or dialog\n2. Create form fields for period start date, flow intensity, and symptoms\n3. Implement date selection directly from calendar or via date picker\n4. Add symptom tracking options (cramps, headache, mood changes, etc.)\n5. Create a PeriodEntry model class to store period data\n6. Implement form validation for period entries\n7. Add save functionality to store period data in local database\n8. Create edit/delete options for existing period entries",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Develop cycle calculation logic",
+            "description": "Implement algorithms to calculate cycle phases, predictions, and fertility windows",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Create a CycleCalculator class to handle cycle logic\n2. Implement methods to calculate average cycle length from historical data\n3. Develop algorithms to determine current cycle phase (menstrual, follicular, ovulation, luteal)\n4. Add prediction logic for upcoming periods based on historical data\n5. Implement fertility window calculation\n6. Create methods to determine cycle day number\n7. Add statistical analysis for cycle regularity and variation\n8. Implement notification triggers for upcoming cycle events\n9. Write unit tests for calculation accuracy",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Create custom calendar visualization for cycle data",
+            "description": "Customize the calendar UI to visually represent cycle phases, period days, and predictions",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "1. Extend TableCalendar with custom builders for day cells\n2. Implement custom markers for different cycle phases\n3. Create color coding system for different cycle states (period, fertile, ovulation)\n4. Add visual indicators for period intensity levels\n5. Implement predicted period days with distinct styling\n6. Create a legend explaining calendar markings\n7. Add animations for phase transitions\n8. Implement today indicator with current phase information\n9. Optimize rendering performance for smooth scrolling",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement cycle history visualization and statistics",
+            "description": "Create screens to display historical cycle data, patterns, and statistics",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "1. Design a cycle history screen with monthly summaries\n2. Create graphical representations of cycle length over time\n3. Implement statistics panel showing average cycle length, variation, and regularity\n4. Add symptom frequency analysis and correlation visualization\n5. Create exportable cycle reports (PDF or CSV)\n6. Implement filtering options for historical data\n7. Add cycle comparison functionality between different time periods\n8. Create data migration tools for importing from other period tracking apps\n9. Implement data backup and restore functionality",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Phase-Based Insights Engine",
+        "description": "Implement the engine that calculates and displays phase-based insights including current phase indicators and days until next phase transition.",
+        "details": "1. Create PhaseCalculator class to determine:\n   - Current phase for each profile\n   - Days remaining in current phase\n   - Next phase transition date\n   - Phase duration based on individual patterns\n2. Implement the four phase tracking logic:\n   - Menstrual (days 1-5)\n   - Follicular (days 1-13)\n   - Ovulation (days 12-17)\n   - Luteal (days 15-28)\n3. Allow for phase duration customization\n4. Create phase history analysis\n5. Design UI components for phase visualization\n6. Implement phase-specific information display\n7. Add phase transition predictions based on historical data",
+        "testStrategy": "1. Unit tests for PhaseCalculator with various scenarios\n2. Test phase duration customization\n3. Verify phase transition predictions\n4. Test with irregular cycle data\n5. Integration tests for phase visualization\n6. Verify accuracy against sample datasets",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Phase Calculation Algorithm",
+            "description": "Develop the core algorithm to accurately calculate menstrual cycle phases based on user data",
+            "dependencies": [],
+            "details": "Create a robust algorithm that processes user-input dates, cycle lengths, and symptoms to determine current phase (menstrual, follicular, ovulatory, luteal). Handle edge cases like irregular cycles, missing data points, and cycle variations. Include logic to normalize data across multiple cycles for improved accuracy. The algorithm should output a clear phase designation with confidence score.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Build Phase Duration Customization System",
+            "description": "Create functionality allowing users to customize phase lengths based on their personal cycle patterns",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop UI components and backend logic for users to adjust default phase durations. Include data validation to ensure physiologically possible values. Store user-specific phase duration preferences and implement override capabilities. Create a calibration system that suggests optimal phase durations based on historical data while allowing manual adjustments.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Develop Phase History Analysis Module",
+            "description": "Create analytics system to identify patterns in symptoms, moods, and energy levels across cycle phases",
+            "dependencies": [
+              1
+            ],
+            "details": "Build data processing pipeline to analyze historical phase data, identifying correlations between phases and reported symptoms/moods. Implement statistical methods to determine significance of patterns. Create storage system for phase-specific symptom profiles (e.g., typical energy levels, mood changes, physical symptoms for each phase). Include functionality to refine these profiles over time as more data is collected.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Design Phase Visualization Components",
+            "description": "Create interactive UI components to display current phase, associated symptoms, and historical patterns",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Develop a circular phase indicator showing current position in cycle with color-coding for different phases. Create expandable cards displaying phase-specific information (typical symptoms, duration, tips). Design timeline view showing historical phase data with symptom intensity markers. Implement toggles to filter visualization by symptom categories. Ensure all components are responsive and accessible.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement Phase Transition Prediction System",
+            "description": "Develop predictive algorithms to forecast upcoming phase changes and associated symptom patterns",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Create prediction model using historical phase data to forecast timing of upcoming transitions. Implement notification system for imminent phase changes with expected symptom shifts. Develop confidence scoring for predictions based on cycle regularity. Include personalized recommendations for managing predicted symptom changes. Build feedback mechanism to improve prediction accuracy based on actual transitions.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Symptom Tracking System",
+        "description": "Develop the symptom tracking functionality allowing users to log and visualize physical and emotional symptoms for each profile.",
+        "details": "1. Create symptom tracking models for:\n   - Physical symptoms (energy, cramps, headaches, bloating, appetite, sleep)\n   - Emotional symptoms (mood, stability, social preference, stress, needs)\n2. Implement rating scales (1-5) for symptom severity\n3. Design intuitive symptom logging interface\n4. Create symptom history visualization using fl_chart\n5. Implement symptom correlation analysis\n6. Add symptom pattern recognition for predictions\n7. Create symptom summary views by cycle and phase\n8. Implement quick-entry for common symptoms",
+        "testStrategy": "1. Unit tests for symptom data models\n2. Widget tests for symptom logging interface\n3. Integration tests for symptom visualization\n4. Test pattern recognition with sample datasets\n5. Verify symptom correlation analysis\n6. Usability testing for quick-entry workflow",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Symptom Data Models",
+            "description": "Create comprehensive data models for tracking externally observable symptoms including mood, energy levels, irritability, and social preferences.",
+            "dependencies": [],
+            "details": "Design database schema with the following components: 1) Core symptom categories (mood, energy, irritability, social engagement) with severity scales (1-10), 2) Timestamp and duration tracking, 3) Observer relationship field (partner/parent/self), 4) Contextual factors (time of day, activities, medication timing), 5) Notes field for qualitative observations. Ensure models support both discrete measurements and trend analysis over time.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Develop Symptom Logging Interface",
+            "description": "Create an intuitive interface for partners/parents to log observable symptoms with minimal friction.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build a mobile-responsive form with: 1) Quick-select buttons for common symptoms, 2) Slider controls for intensity levels, 3) Relationship selector (who is logging), 4) Time/duration pickers with defaults to current time, 5) Optional context fields, 6) Voice-to-text for notes field. Design for accessibility and ensure completion time under 30 seconds for routine entries.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement Quick-Entry System",
+            "description": "Develop a streamlined quick-entry system for frequent symptom logging with minimal input requirements.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create a system with: 1) Customizable templates for common symptom combinations, 2) One-tap entry from notification/widget, 3) Default values for time and observer, 4) Batch entry option for logging multiple symptoms at once, 5) Voice command integration for hands-free logging. Include ability to edit entries later with more detail if needed.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Create Symptom Visualization Dashboard",
+            "description": "Develop interactive visualizations to display symptom patterns over time with filtering capabilities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build visualization components including: 1) Timeline charts showing symptom intensity over days/weeks/months, 2) Correlation views between different symptoms, 3) Time-of-day heat maps showing when symptoms typically occur, 4) Comparison views between observer reports (partner vs. self-reporting), 5) Export functionality for sharing with healthcare providers. Ensure visualizations are interactive and responsive across device sizes.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement Pattern Recognition System",
+            "description": "Develop an algorithm to identify patterns in symptom data and provide insights on potential triggers and trends.",
+            "dependencies": [
+              1,
+              4
+            ],
+            "details": "Create a pattern recognition system that: 1) Identifies correlations between symptoms and contextual factors, 2) Detects cyclical patterns in mood and energy levels, 3) Highlights potential triggers based on statistical analysis, 4) Generates weekly/monthly reports summarizing key insights, 5) Provides customizable alerts for significant changes in symptom patterns. Include confidence levels for all identified patterns and allow user feedback to improve accuracy.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Predictive Calendar Algorithm",
+        "description": "Implement the predictive algorithm that forecasts cycle phases, symptoms, and energy levels for the next 3 months based on historical data.",
+        "details": "1. Create PredictionEngine class using simple moving average of last 3-6 cycles\n2. Implement algorithms for:\n   - Cycle length prediction\n   - Phase duration forecasting\n   - Symptom pattern recognition\n   - Energy level forecasting\n   - Mood sensitivity prediction\n3. Design 3-month forward view calendar\n4. Implement color-coding for predicted days\n5. Add confidence indicators for predictions\n6. Create \"high support needed\" day markers\n7. Allow manual adjustment of predictions\n8. Implement prediction accuracy tracking",
+        "testStrategy": "1. Unit tests for prediction algorithms\n2. Test with various historical data patterns\n3. Verify prediction accuracy against known outcomes\n4. Test edge cases (irregular cycles, missing data)\n5. Integration tests for prediction visualization\n6. Performance testing with large datasets",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Basic Cycle Averaging",
+            "description": "Create a simple algorithm that calculates the average length of past cycles to predict future dates",
+            "dependencies": [],
+            "details": "Calculate the mean of the last 3-6 cycles to establish a baseline prediction. Use simple calendar math to add the average cycle length to the last recorded cycle start date. Include handling for when there are fewer than 3 cycles recorded.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Develop Weighted Recent Cycle Algorithm",
+            "description": "Enhance prediction by giving more weight to recent cycles than older ones",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement a weighted average where the most recent cycle has the highest weight (e.g., 0.5), the second most recent has less (e.g., 0.3), and so on. This accounts for recent trends in the user's cycle patterns without requiring complex ML.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Create Simple Visualization of Predictions",
+            "description": "Develop calendar view highlighting predicted cycle start dates and fertile windows",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Use the prediction algorithm to mark future dates on a calendar. Show predicted cycle start dates with one color and estimated fertile windows (typically 5 days before ovulation plus ovulation day) with another color. Include a simple timeline view option.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Confidence Indicators",
+            "description": "Add visual indicators showing prediction confidence based on data consistency",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Calculate the standard deviation of past cycle lengths. Use this to create a simple confidence score: low variance = high confidence, high variance = low confidence. Display this as color coding or simple indicators (high/medium/low) on the predicted dates.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Add Manual Adjustment Features",
+            "description": "Allow users to manually adjust predictions based on their knowledge",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Create a simple interface for users to drag/adjust predicted dates. Include options to mark certain predictions as 'confirmed' by the user. Store both the algorithm's prediction and user adjustments separately to improve future predictions.",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Implement Prediction Accuracy Tracking",
+            "description": "Develop a system to track how accurate past predictions were compared to actual dates",
+            "dependencies": [
+              5
+            ],
+            "details": "When a user logs an actual cycle start date, compare it to the predicted date. Calculate the difference in days and maintain a running average of prediction accuracy. Display this information to users and use it to potentially adjust the confidence indicators.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Daily Observation Logging",
+        "description": "Create the daily observation logging system allowing users to quickly record mood, energy, and custom notes for each profile.",
+        "details": "1. Design quick-entry interface for daily observations\n2. Implement logging for:\n   - Mood selection (happy, neutral, irritable, anxious)\n   - Energy level slider (1-5)\n   - Custom notes field\n   - Time-stamped entries\n3. Create DailyLog repository and data model\n4. Add observation history view\n5. Implement reminder system for daily logging\n6. Create dashboard widgets showing recent observations\n7. Add photo attachment option for observations\n8. Implement search functionality for notes",
+        "testStrategy": "1. Unit tests for DailyLog repository\n2. Widget tests for quick-entry interface\n3. Integration tests for observation history view\n4. Test time-stamping accuracy\n5. Verify reminder functionality\n6. Usability testing to ensure logging takes <30 seconds",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Quick-Entry Interface",
+            "description": "Create a user-friendly interface for rapid observation logging that's accessible from the main screen",
+            "dependencies": [],
+            "details": "Design and implement a quick-entry form that allows users to log observations with minimal friction. Include fields for observation text, automatic timestamp capture, and optional mood/category selection. The interface should be accessible via a prominent button on the main screen and support both short notes and longer reflections. Use Material Design components for consistency.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement Observation Data Model",
+            "description": "Create the data structure and storage mechanism for observation entries",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop a robust data model for storing observations, including fields for content, timestamp, categories/tags, and mood indicators. Implement database schema, repository pattern for data access, and necessary CRUD operations. Ensure proper indexing for efficient retrieval and consider encryption for sensitive content.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Create History View",
+            "description": "Develop a chronological view of past observations with filtering and search capabilities",
+            "dependencies": [
+              2
+            ],
+            "details": "Build a scrollable timeline view that displays past observations in reverse chronological order. Implement filtering by date range, category, and mood. Add search functionality to find specific content. Include options for editing and deleting past entries, with appropriate confirmation dialogs. Design the UI to clearly show timestamps and provide visual differentiation between different types of entries.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Reminder System",
+            "description": "Create a configurable reminder system to encourage regular observation logging",
+            "dependencies": [
+              2
+            ],
+            "details": "Develop a notification system that reminds users to log observations at configurable intervals. Include options for daily, weekly, or custom schedules. Implement respectful notification practices with user-configurable quiet hours. Create a settings interface for managing reminder preferences and ensure notifications deep-link directly to the quick-entry form when tapped.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Integrate with Main Application Flow",
+            "description": "Ensure seamless integration of the observation logging feature with the rest of the application",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Connect the observation logging feature to the main application navigation and workflow. Add entry points from relevant screens, implement proper state management to preserve draft entries, and ensure consistent styling throughout. Test the complete user journey from receiving a reminder to viewing logged observations in the history view. Document the integration points for future maintenance.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Support Suggestions System",
+        "description": "Implement the system that provides phase-specific support suggestions, tips, and activity recommendations based on the current phase of each profile.",
+        "status": "pending",
+        "dependencies": [
+          5
+        ],
+        "priority": "medium",
+        "details": "1. Create database of support suggestions for each phase:\n   - Menstrual: comfort, rest, patience suggestions\n   - Follicular: activity planning, project support\n   - Ovulation: social plans, important discussions\n   - Luteal: patience, stress reduction, validation\n2. Implement SuggestionEngine to select relevant suggestions\n3. Design UI for daily tips display\n4. Create \"What to expect\" information cards\n5. Implement conversation starters feature\n6. Add activity suggestions based on energy levels\n7. Create helpful actions list for each phase\n8. Allow users to save favorite suggestions",
+        "testStrategy": "1. Unit tests for SuggestionEngine\n2. Verify phase-appropriate suggestions\n3. Widget tests for suggestion display\n4. Test suggestion relevance across different profiles\n5. Integration tests for suggestion interaction\n6. User feedback collection on suggestion helpfulness",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Support Suggestions Database",
+            "description": "Develop a comprehensive database of practical support suggestions categorized by menstrual cycle phase",
+            "dependencies": [],
+            "details": "Create a structured database with categories for each menstrual cycle phase (menstrual, follicular, ovulation, luteal). Include specific actionable suggestions like 'offer heating pads during cramps', 'prepare comfort foods', 'practice patience during menstrual phase', 'support new projects during follicular phase', 'schedule important discussions during ovulation', 'plan social events during ovulation', 'help reduce stress during luteal phase', 'validate feelings during luteal phase', 'provide favorite snacks during luteal phase'. Tag suggestions with attributes like effort level, preparation required, and emotional impact.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement Suggestion Engine Algorithm",
+            "description": "Develop the core algorithm that selects contextually appropriate support suggestions based on current menstrual cycle phase",
+            "dependencies": [
+              1
+            ],
+            "details": "Create an algorithm that filters the suggestion database based on current menstrual cycle phase, user preferences, and previously shown suggestions. Implement weighting factors to prioritize timely suggestions (e.g., comfort measures during menstrual phase, social planning during ovulation). Include logic to avoid repetitive suggestions and ensure variety. Design the API endpoints that the UI will call to retrieve suggestions.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Develop Phase-Specific UI Components",
+            "description": "Create UI components to display support suggestions in an accessible, actionable format",
+            "dependencies": [
+              2
+            ],
+            "details": "Design and implement UI cards/components that display cycle phase-specific suggestions with clear titles, descriptions, and optional steps. Include visual indicators for suggestion categories (physical support, emotional support, practical help). Create layouts for different device sizes. Implement a 'mark as done' feature and a way to save favorite suggestions. Ensure accessibility compliance for all components.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement User Interaction Features",
+            "description": "Add features allowing users to interact with, save, and provide feedback on suggestions",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement functionality for users to bookmark helpful suggestions, dismiss irrelevant ones, and rate suggestion usefulness. Create a 'Saved Suggestions' section for quick reference. Add the ability for users to set reminders for specific suggestions (like preparing heating pads before menstrual phase or scheduling important talks during ovulation). Develop a feedback mechanism to improve suggestion quality over time. Include a feature to share suggestions with others via messaging or email.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Test and Refine Suggestion System",
+            "description": "Conduct comprehensive testing of the suggestion system with real users and refine based on feedback",
+            "dependencies": [
+              4
+            ],
+            "details": "Perform usability testing with users across different menstrual cycle phases. Collect data on which suggestions are most frequently used, saved, or dismissed. Analyze patterns to improve the suggestion algorithm. Refine content based on user feedback. Test edge cases like transitions between phases. Optimize performance for quick loading of suggestions. Verify that menstrual phase comfort suggestions, follicular phase activity planning, ovulation phase social planning, and luteal phase stress reduction suggestions are all relevant and helpful.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Notification System",
+        "description": "Develop the opt-in notification system for phase transitions, predicted low energy days, mood sensitivity reminders, and period start predictions.",
+        "details": "1. Integrate flutter_local_notifications package\n2. Create NotificationService class\n3. Implement notification types:\n   - Phase transition alerts\n   - Predicted low energy day warnings\n   - Mood sensitivity reminders\n   - Period start predictions\n   - Custom reminders\n4. Design notification settings UI with opt-in controls\n5. Create notification scheduling based on predictions\n6. Implement quiet hours settings\n7. Add notification history view\n8. Create per-profile notification preferences",
+        "testStrategy": "1. Unit tests for NotificationService\n2. Test notification scheduling accuracy\n3. Verify opt-in functionality works correctly\n4. Test quiet hours enforcement\n5. Integration tests for notification generation\n6. Verify notifications appear correctly on both platforms",
+        "priority": "low",
+        "dependencies": [
+          5,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Core Notification Service Architecture",
+            "description": "Design and implement the core notification service that will handle all notification operations",
+            "dependencies": [],
+            "details": "Create a centralized notification service that will: 1) Interface with the prediction engine to receive phase transition and symptom predictions, 2) Implement a queue system for pending notifications, 3) Create a notification dispatcher that respects user preferences, 4) Design interfaces for different notification types, 5) Implement logging for notification delivery and user interactions",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Notification Types and Content Templates",
+            "description": "Define different notification types and create content templates for each notification scenario",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement various notification types including: 1) Phase transition alerts, 2) Predicted symptom warnings, 3) Medication reminders, 4) Custom user-defined notifications. For each type, create customizable templates with appropriate tone and content. Ensure notifications are informative but respectful, with clear opt-in messaging and educational content where appropriate.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Notification Settings UI",
+            "description": "Design and implement the user interface for notification preferences and settings",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create a comprehensive settings screen that allows users to: 1) Enable/disable specific notification types, 2) Set quiet hours with start and end times, 3) Configure notification frequency and intensity, 4) Preview what different notifications will look like, 5) Set up custom notifications for specific events. Include clear explanations of each setting's purpose and impact.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Notification Scheduling Logic",
+            "description": "Implement intelligent scheduling for notifications based on predictions and user preferences",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Develop scheduling algorithms that: 1) Integrate with the prediction engine to time notifications appropriately before predicted events, 2) Respect quiet hours and do not disturb settings, 3) Implement priority levels for different notification types, 4) Handle notification batching to prevent overwhelming the user, 5) Include logic for follow-up notifications when appropriate (e.g., checking if a predicted symptom actually occurred)",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Platform-Specific Notification Implementation",
+            "description": "Implement platform-specific notification handling for iOS and Android",
+            "dependencies": [
+              1,
+              2,
+              4
+            ],
+            "details": "Create platform-specific implementations that: 1) Utilize native notification APIs for iOS and Android, 2) Handle foreground and background notification states, 3) Implement deep linking from notifications to relevant app sections, 4) Handle notification permissions requests respectfully with clear explanations, 5) Implement notification channels on Android for granular control, 6) Support rich notifications with appropriate actions based on notification type",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Privacy & Security Implementation",
+        "description": "Implement privacy and security features including local-only storage, biometric app lock, and data encryption to ensure sensitive information is protected.",
+        "details": "1. Integrate local_auth package for biometric authentication\n2. Implement app lock functionality with PIN fallback\n3. Add database encryption using SQLCipher\n4. Create privacy settings UI\n5. Implement secure data export/backup functionality\n6. Add automatic app locking after inactivity\n7. Create privacy policy document\n8. Implement secure data deletion\n9. Add app usage analytics opt-out\n10. Verify no network calls are made to external services",
+        "testStrategy": "1. Security audit of data storage\n2. Test biometric authentication on various devices\n3. Verify encryption is working correctly\n4. Test PIN fallback mechanism\n5. Verify no data leakage during app usage\n6. Test secure data export and deletion\n7. Verify app functions without internet connection",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Biometric Authentication",
+            "description": "Integrate local biometric authentication using Flutter's local_auth package for secure app access",
+            "dependencies": [],
+            "details": "1. Add local_auth package to pubspec.yaml\n2. Configure platform-specific settings in Info.plist and AndroidManifest.xml\n3. Create BiometricService class with methods for checking availability and authenticating\n4. Implement fallback authentication method\n5. Add biometric authentication to app startup flow\n6. Test on both Android and iOS devices",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement Database Encryption",
+            "description": "Set up encrypted local storage for sensitive user data using flutter_secure_storage and encrypted_shared_preferences",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Add flutter_secure_storage and encrypted_shared_preferences packages\n2. Create EncryptionService with AES encryption implementation\n3. Modify database service to encrypt/decrypt data on read/write\n4. Generate and securely store encryption keys\n5. Update existing data access methods to use encryption\n6. Verify data is properly encrypted in storage",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Develop Privacy Settings UI",
+            "description": "Create a comprehensive privacy settings screen allowing users to control data storage and authentication preferences",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Design privacy settings screen with toggle options\n2. Implement settings for biometric authentication, data retention periods, and export/deletion\n3. Create PrivacySettingsController to manage user preferences\n4. Add explanatory text for each privacy option\n5. Implement settings persistence using SecureStorage\n6. Add confirmation dialogs for sensitive operations",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Secure Data Operations",
+            "description": "Create secure methods for data export, deletion, and backup with proper authentication checks",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "1. Implement data export functionality with password-protected ZIP\n2. Create secure data deletion methods with proper verification\n3. Add data backup functionality with encryption\n4. Implement authentication checks before sensitive operations\n5. Add logging for security-related operations\n6. Create recovery mechanisms for accidental data loss",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Conduct Security Audit and Testing",
+            "description": "Perform comprehensive security testing and implement fixes for any vulnerabilities found",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. Create security test cases covering authentication, encryption, and data handling\n2. Test for common vulnerabilities (improper key storage, unencrypted data)\n3. Verify no sensitive data is logged or exposed\n4. Implement certificate pinning for any network requests\n5. Document security measures for users\n6. Fix any identified security issues",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Dashboard & Home Screen",
+        "description": "Design and implement the main dashboard showing at-a-glance information for all profiles including current phases, upcoming events, and quick actions.",
+        "details": "1. Create home screen layout with profile cards\n2. Implement profile quick-switching\n3. Design at-a-glance widgets for each profile:\n   - Current phase indicator\n   - Days until next phase/period\n   - Today's predicted energy/mood\n   - Recent observations\n4. Add upcoming events section\n5. Create quick action buttons for common tasks\n6. Implement dashboard customization options\n7. Add data visualization widgets\n8. Create profile comparison view",
+        "testStrategy": "1. Widget tests for dashboard components\n2. Verify data accuracy in at-a-glance widgets\n3. Test profile switching functionality\n4. Integration tests for dashboard interactions\n5. Usability testing for information hierarchy\n6. Verify dashboard updates with new data",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Home Screen Layout Design",
+            "description": "Design the overall layout and information architecture of the dashboard home screen",
+            "dependencies": [],
+            "details": "Create wireframes and mockups for the dashboard layout including navigation, content areas, and responsive design considerations. Define the grid system for organizing family member cards, widgets, and action buttons. Ensure the design follows accessibility guidelines and maintains visual hierarchy for important information.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Family Member Profile Cards Implementation",
+            "description": "Develop the profile card components that display each family member's current phase and status",
+            "dependencies": [
+              1
+            ],
+            "details": "Create reusable profile card components that display family member photo, name, current fertility phase, and status indicators. Implement visual cues for different phases (follicular, ovulation, luteal, menstrual) and attention indicators. Ensure cards are interactive and link to detailed individual profiles.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "At-a-Glance Widgets Development",
+            "description": "Build widget components that display summarized information and predictions",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop modular widgets for upcoming predictions, calendar events, cycle statistics, and health insights. Create data visualization components (charts, graphs, timelines) that present complex information clearly. Implement real-time data updates and ensure widgets maintain performance with frequent refreshes.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Quick Actions Implementation",
+            "description": "Create the quick action buttons and functionality for common user tasks",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Implement action buttons for logging symptoms, adding notes, scheduling appointments, and accessing detailed reports. Create confirmation dialogs and feedback mechanisms for action completion. Ensure actions are contextual to the current user state and family member selected.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Dashboard Customization Features",
+            "description": "Implement user preferences and customization options for the dashboard",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create settings interface for users to customize dashboard layout, widget visibility, and information density. Implement drag-and-drop functionality for rearranging dashboard elements. Develop user preference storage and retrieval system. Add tutorial overlays for new users to understand customization options.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Phase-Specific Feature Implementation",
+        "description": "Implement the detailed tracking and support features specific to each menstrual cycle phase (Menstrual, Follicular, Ovulation, Luteal).",
+        "status": "pending",
+        "dependencies": [
+          5,
+          6,
+          9
+        ],
+        "priority": "medium",
+        "details": "1. Create phase-specific tracking interfaces for:\n   - Menstrual (days 1-5): heavy flow tracking, cramp severity, fatigue levels, need for rest\n   - Follicular (days 1-13): rising energy, improved mood, motivation tracking\n   - Ovulation (days 12-17): peak confidence, social energy, communication skills\n   - Luteal (days 15-28): PMS symptoms, irritability, bloating, food cravings\n2. Implement phase-specific support suggestion display\n3. Create phase information screens with educational content\n4. Add phase-specific symptom tracking\n5. Implement phase comparison across cycles\n6. Create phase duration customization interface\n7. Add phase-specific activity recommendations",
+        "testStrategy": "1. Widget tests for phase-specific interfaces\n2. Verify correct phase detection and display\n3. Test phase-specific symptom tracking\n4. Integration tests for phase information screens\n5. Verify support suggestions match current phase\n6. Test phase customization functionality",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Phase-Specific Tracking Interfaces",
+            "description": "Create unique tracking interfaces for each menstrual cycle phase (Menstrual, Follicular, Ovulation, Luteal) with appropriate metrics and visualization.",
+            "dependencies": [],
+            "details": "Design and implement four distinct tracking interfaces: 1) Menstrual phase (days 1-5): heavy flow tracking, cramp severity, fatigue levels, need for rest, 2) Follicular phase (days 1-13): rising energy, improved mood, motivation tracking, 3) Ovulation phase (days 12-17): peak confidence, social energy, communication skills tracking, 4) Luteal phase (days 15-28): PMS symptoms, irritability, bloating, food cravings. Each interface should have appropriate data visualization (charts, calendars) and phase-appropriate color schemes/imagery.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Implement Support Suggestion Integration",
+            "description": "Develop phase-specific support suggestion algorithms that provide relevant resources based on tracked symptoms and user inputs.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create support suggestion systems for each phase: 1) Menstrual: comfort measures for cramps, self-care activities for fatigue, nutrition for iron loss, 2) Follicular: activities to harness rising energy, productivity tools for improved focus, 3) Ovulation: social event suggestions, communication enhancement tips, confidence-building activities, 4) Luteal: mood management techniques, bloating reduction strategies, healthy alternatives for food cravings. Include personalized suggestions based on symptom severity and user preferences.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Create Phase-Specific Educational Content",
+            "description": "Develop educational content libraries tailored to each menstrual cycle phase with appropriate delivery mechanisms.",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop content for: 1) Menstrual: understanding menstrual flow patterns, managing period pain, when to seek medical help, 2) Follicular: hormonal changes during this phase, optimal exercise types, cognitive benefits, 3) Ovulation: fertility awareness, physical signs of ovulation, hormonal influences on social behavior, 4) Luteal: understanding PMS, hormonal fluctuations, sleep optimization strategies. Include science-based articles, short videos, and interactive tools explaining hormonal influences on physical and emotional states during each phase.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Develop Symptom Tracking Specialization",
+            "description": "Implement specialized symptom tracking features for each menstrual cycle phase with appropriate analysis and visualization tools.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create specialized tracking for: 1) Menstrual: flow intensity (light/medium/heavy), cramp severity, fatigue levels, headaches, body temperature, 2) Follicular: energy levels, mood improvements, motivation metrics, focus ability, creative inspiration, 3) Ovulation: confidence levels, social energy, libido changes, cervical mucus changes, mittelschmerz (ovulation pain), 4) Luteal: PMS symptom severity, irritability levels, bloating intensity, specific food cravings, sleep quality. Include trend analysis across cycles and pattern recognition to help users identify their unique cycle patterns.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Implement Phase Comparison Features",
+            "description": "Create tools that allow users to compare experiences across different menstrual cycle phases and across multiple cycles.",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Develop features that: 1) Allow users to compare symptom severity across different phases within a single cycle, 2) Enable comparison of the same phase across multiple cycles (e.g., comparing luteal phase symptoms from the last three cycles), 3) Create phase-specific milestone visualizations showing typical vs. user's actual experience, 4) Implement predictive features that forecast upcoming phase changes based on historical data. Include data visualization tools like comparative charts and cycle overlays to help users identify patterns in their menstrual health.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Data Export & Backup",
+        "description": "Implement functionality for exporting and backing up profile data locally without cloud sync, maintaining privacy while allowing data preservation.",
+        "details": "1. Create secure data export functionality\n2. Implement JSON and CSV export formats\n3. Add backup creation to local storage\n4. Create backup restoration interface\n5. Implement scheduled automatic backups\n6. Add backup encryption\n7. Create backup management screen\n8. Implement selective data export by profile\n9. Add data export password protection\n10. Create backup verification system",
+        "testStrategy": "1. Test export functionality with various data volumes\n2. Verify exported data format integrity\n3. Test backup creation and restoration\n4. Verify encryption of exported data\n5. Test selective export functionality\n6. Integration tests for backup management\n7. Verify password protection works correctly",
+        "priority": "low",
+        "dependencies": [
+          2,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Secure Data Export Functionality",
+            "description": "Create a secure data export system that allows users to export their data in CSV format with privacy considerations.",
+            "dependencies": [],
+            "details": "Develop a module that extracts user data from the database, formats it into CSV, ensures all sensitive data is properly handled, implements rate limiting to prevent abuse, and provides clear user feedback during the export process. Ensure exports are local-only and no data is sent to external servers.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Create Backup Creation and Restoration System",
+            "description": "Develop functionality to create complete application backups and restore from them when needed.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement a backup system that captures all user data in a compressed format, creates a verification checksum, provides clear progress indicators during backup/restore operations, and includes error handling for interrupted processes. Ensure the restoration process validates backup integrity before proceeding.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Implement Encryption for Backups",
+            "description": "Add strong encryption capabilities to the backup system to ensure data security.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate AES-256 encryption for backup files, implement secure key generation and management, create a password-based encryption option for users, add visual indicators for encrypted vs non-encrypted backups, and ensure encryption doesn't significantly impact performance.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Develop Backup Management Interface",
+            "description": "Create a user-friendly interface for managing backups and exports.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Design and implement a dedicated section in the app for backup management, including features to view backup history, delete old backups, schedule automatic backups, display backup size and creation date, and provide clear instructions for users on how to manage their data.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Test Data Portability and Recovery Scenarios",
+            "description": "Thoroughly test all export and backup functionality across different scenarios to ensure reliability.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create and execute test cases for various export formats, backup sizes, interrupted operations, corrupted backups, cross-device restoration, and edge cases like low storage situations. Document recovery procedures and create user-facing help content explaining the backup and restore process.",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Testing, Polishing & Documentation",
+        "description": "Conduct comprehensive testing, UI refinement, and create documentation for the app to ensure quality, usability, and maintainability.",
+        "details": "1. Create comprehensive test suite:\n   - Unit tests for all business logic\n   - Widget tests for UI components\n   - Integration tests for key workflows\n   - Performance tests\n2. Conduct usability testing with target users\n3. Implement UI refinements based on feedback\n4. Create user documentation:\n   - In-app help screens\n   - Onboarding tutorial\n   - FAQ section\n5. Prepare developer documentation:\n   - Architecture overview\n   - Code comments\n   - API documentation\n6. Perform accessibility review and improvements\n7. Conduct security audit\n8. Create app store listings and screenshots\n9. Implement analytics for crash reporting (opt-in)\n10. Final performance optimization",
+        "testStrategy": "1. Run full test suite on multiple devices\n2. Conduct beta testing with real users\n3. Verify all acceptance criteria are met\n4. Test on low-end devices for performance\n5. Accessibility testing with screen readers\n6. Verify documentation accuracy and completeness\n7. Test app store submission process",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Comprehensive Test Suite",
+            "description": "Develop a complete test suite including unit tests, widget tests, and integration tests for the Flutter application.",
+            "dependencies": [],
+            "details": "Write unit tests for all business logic and utility functions. Create widget tests for UI components and screens. Implement integration tests for key user flows. Aim for at least 80% code coverage. Include testing for edge cases and error handling.",
+            "status": "pending"
+          },
+          {
+            "id": 2,
+            "title": "Conduct Usability Testing",
+            "description": "Perform usability testing with real users to identify UI/UX issues and gather feedback for improvements.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a usability testing plan with specific tasks for testers. Recruit 5-7 testers with varying levels of technical expertise. Document all feedback and observations. Prioritize issues based on severity and frequency. Implement critical fixes before final release.",
+            "status": "pending"
+          },
+          {
+            "id": 3,
+            "title": "Develop User Documentation",
+            "description": "Create comprehensive user documentation including installation guide, user manual, and FAQ section.",
+            "dependencies": [
+              2
+            ],
+            "details": "Write clear installation instructions for different platforms. Create a user manual with screenshots explaining all features. Develop a searchable FAQ section addressing common questions. Include troubleshooting guides for known issues. Format documentation for both online viewing and PDF download.",
+            "status": "pending"
+          },
+          {
+            "id": 4,
+            "title": "Implement Accessibility Improvements",
+            "description": "Enhance application accessibility to ensure compliance with WCAG guidelines and improve usability for all users.",
+            "dependencies": [
+              2
+            ],
+            "details": "Audit the application for accessibility issues using automated tools. Ensure proper semantic markup and screen reader compatibility. Implement keyboard navigation throughout the app. Add appropriate text contrast and resizable text options. Test with accessibility tools like TalkBack and VoiceOver.",
+            "status": "pending"
+          },
+          {
+            "id": 5,
+            "title": "Perform Security Audit",
+            "description": "Conduct a comprehensive security audit to identify and address potential vulnerabilities in the application.",
+            "dependencies": [
+              1
+            ],
+            "details": "Review code for security vulnerabilities like injection attacks and insecure data storage. Test authentication and authorization mechanisms. Verify secure communication with APIs. Check for proper handling of sensitive data. Document security practices for future maintenance.",
+            "status": "pending"
+          },
+          {
+            "id": 6,
+            "title": "Optimize Performance",
+            "description": "Identify and resolve performance bottlenecks to ensure the application runs smoothly on all target devices.",
+            "dependencies": [
+              1,
+              5
+            ],
+            "details": "Profile the application to identify performance bottlenecks. Optimize rendering performance for smooth UI. Reduce memory usage and prevent leaks. Improve startup time and asset loading. Test performance on low-end devices to ensure acceptable performance across all target platforms.",
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-20T23:26:48.800Z",
+      "updated": "2025-06-20T23:26:48.800Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

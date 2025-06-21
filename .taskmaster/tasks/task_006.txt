@@ -1,0 +1,57 @@
+# Task ID: 6
+# Title: Symptom Tracking System
+# Status: pending
+# Dependencies: 2, 3
+# Priority: medium
+# Description: Develop the symptom tracking functionality allowing users to log and visualize physical and emotional symptoms for each profile.
+# Details:
+1. Create symptom tracking models for:
+   - Physical symptoms (energy, cramps, headaches, bloating, appetite, sleep)
+   - Emotional symptoms (mood, stability, social preference, stress, needs)
+2. Implement rating scales (1-5) for symptom severity
+3. Design intuitive symptom logging interface
+4. Create symptom history visualization using fl_chart
+5. Implement symptom correlation analysis
+6. Add symptom pattern recognition for predictions
+7. Create symptom summary views by cycle and phase
+8. Implement quick-entry for common symptoms
+
+# Test Strategy:
+1. Unit tests for symptom data models
+2. Widget tests for symptom logging interface
+3. Integration tests for symptom visualization
+4. Test pattern recognition with sample datasets
+5. Verify symptom correlation analysis
+6. Usability testing for quick-entry workflow
+
+# Subtasks:
+## 1. Design Symptom Data Models [pending]
+### Dependencies: None
+### Description: Create comprehensive data models for tracking externally observable symptoms including mood, energy levels, irritability, and social preferences.
+### Details:
+Design database schema with the following components: 1) Core symptom categories (mood, energy, irritability, social engagement) with severity scales (1-10), 2) Timestamp and duration tracking, 3) Observer relationship field (partner/parent/self), 4) Contextual factors (time of day, activities, medication timing), 5) Notes field for qualitative observations. Ensure models support both discrete measurements and trend analysis over time.
+
+## 2. Develop Symptom Logging Interface [pending]
+### Dependencies: 6.1
+### Description: Create an intuitive interface for partners/parents to log observable symptoms with minimal friction.
+### Details:
+Build a mobile-responsive form with: 1) Quick-select buttons for common symptoms, 2) Slider controls for intensity levels, 3) Relationship selector (who is logging), 4) Time/duration pickers with defaults to current time, 5) Optional context fields, 6) Voice-to-text for notes field. Design for accessibility and ensure completion time under 30 seconds for routine entries.
+
+## 3. Implement Quick-Entry System [pending]
+### Dependencies: 6.1, 6.2
+### Description: Develop a streamlined quick-entry system for frequent symptom logging with minimal input requirements.
+### Details:
+Create a system with: 1) Customizable templates for common symptom combinations, 2) One-tap entry from notification/widget, 3) Default values for time and observer, 4) Batch entry option for logging multiple symptoms at once, 5) Voice command integration for hands-free logging. Include ability to edit entries later with more detail if needed.
+
+## 4. Create Symptom Visualization Dashboard [pending]
+### Dependencies: 6.1
+### Description: Develop interactive visualizations to display symptom patterns over time with filtering capabilities.
+### Details:
+Build visualization components including: 1) Timeline charts showing symptom intensity over days/weeks/months, 2) Correlation views between different symptoms, 3) Time-of-day heat maps showing when symptoms typically occur, 4) Comparison views between observer reports (partner vs. self-reporting), 5) Export functionality for sharing with healthcare providers. Ensure visualizations are interactive and responsive across device sizes.
+
+## 5. Implement Pattern Recognition System [pending]
+### Dependencies: 6.1, 6.4
+### Description: Develop an algorithm to identify patterns in symptom data and provide insights on potential triggers and trends.
+### Details:
+Create a pattern recognition system that: 1) Identifies correlations between symptoms and contextual factors, 2) Detects cyclical patterns in mood and energy levels, 3) Highlights potential triggers based on statistical analysis, 4) Generates weekly/monthly reports summarizing key insights, 5) Provides customizable alerts for significant changes in symptom patterns. Include confidence levels for all identified patterns and allow user feedback to improve accuracy.
+

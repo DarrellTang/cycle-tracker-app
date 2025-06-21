@@ -1,0 +1,262 @@
+PRODUCT REQUIREMENTS DOCUMENT
+Cycle Tracker App - Personal Family Menstrual Cycle Tracking
+Version 1.0
+Date: June 2025
+
+EXECUTIVE SUMMARY
+A mobile application designed for partners/parents to independently track and understand menstrual cycles of family members, providing phase-based insights and symptom predictions to better support loved ones throughout their cycles.
+
+PROJECT OVERVIEW
+Purpose: Enable better understanding and support of family members by tracking menstrual cycles, predicting mood/energy changes, and providing actionable insights.
+Target User: Individual family member (parent/partner) tracking cycles of spouse and daughters
+Platform: Cross-platform mobile (iOS/Android) using Flutter
+Timeline: 4-6 week MVP development with iterative improvements
+
+CORE FEATURES
+
+1. MULTI-PROFILE MANAGEMENT
+- Create and manage multiple profiles (wife + 2 daughters)
+- Customizable tracking parameters per profile
+- Different privacy/tracking settings per person
+- Profile photos and color coding for easy identification
+
+2. CYCLE TRACKING & PREDICTIONS
+- Calendar-based tracking with visual phase indicators
+- Simple averaging algorithm (last 3-6 cycles)
+- Adjustable cycle length per person
+- Period start/end date logging
+- Cycle history visualization
+
+3. PHASE-BASED INSIGHTS
+- Four phase tracking: Menstrual, Follicular, Ovulation, Luteal
+- Current phase indicator for each profile
+- Days until next phase transition
+- Phase duration customization based on individual patterns
+4. SYMPTOM TRACKING & PREDICTIONS
+Physical Symptoms:
+- Energy levels (1-5 scale)
+- Cramps/pain severity
+- Headaches
+- Bloating
+- Appetite changes
+- Sleep quality
+
+Emotional Symptoms:
+- Overall mood (happy, neutral, irritable, anxious)
+- Mood stability (stable vs. swings)
+- Social preference (outgoing vs. withdrawn)
+- Stress sensitivity
+- Emotional needs (space, comfort, attention)
+
+5. PREDICTIVE CALENDAR
+- 3-month forward view with phase predictions
+- Color-coded days for expected symptoms
+- Energy level forecasts
+- Mood sensitivity indicators
+- "High support needed" day markers
+
+6. DAILY OBSERVATION LOGGING
+- Quick entry for observed symptoms
+- Mood notes
+- Energy observations
+- Custom notes field
+- Time-stamped entries
+
+7. SUPPORT SUGGESTIONS
+- Daily tips based on current phase
+- "What to expect" notifications
+- Helpful actions for each phase
+- Conversation starters
+- Activity suggestions
+
+8. NOTIFICATIONS (OPT-IN)
+- Phase transition alerts
+- Predicted low energy days
+- Mood sensitivity reminders
+- Period start predictions
+- Custom reminder options
+PHASE-SPECIFIC FEATURES
+
+MENSTRUAL PHASE (Days 1-5)
+Tracked Indicators:
+- Flow intensity
+- Cramp severity
+- Fatigue levels
+- Headache presence
+- Comfort preferences
+
+Support Suggestions:
+- Offer comfort foods/drinks
+- Suggest rest periods
+- Be patient with irritability
+- Provide heating pads
+- Reduce social expectations
+
+FOLLICULAR PHASE (Days 1-13)
+Tracked Indicators:
+- Energy increase rate
+- Motivation levels
+- Social interest
+- Focus/concentration
+- Physical activity interest
+
+Support Suggestions:
+- Plan activities together
+- Encourage new projects
+- Social event planning
+- Support goal-setting
+- Engage in conversations
+
+OVULATION PHASE (Days 12-17)
+Tracked Indicators:
+- Peak energy levels
+- Communication style
+- Confidence levels
+- Physical symptoms
+- Social preferences
+
+Support Suggestions:
+- Schedule important discussions
+- Plan physical activities
+- Support social plans
+- Celebrate achievements
+- Engage actively
+LUTEAL PHASE (Days 15-28)
+Tracked Indicators:
+- PMS symptom onset
+- Mood swing frequency
+- Anxiety levels
+- Food cravings
+- Sleep needs
+
+Support Suggestions:
+- Extra patience needed
+- Reduce stress triggers
+- Offer favorite snacks
+- Allow alone time
+- Validate feelings
+
+TECHNICAL SPECIFICATIONS
+
+TECHNOLOGY STACK
+- Framework: Flutter (Dart)
+- Database: SQLite (local storage)
+- State Management: Provider or Riverpod
+- Charts: fl_chart package
+- Calendar: table_calendar package
+- Notifications: flutter_local_notifications
+
+DATA ARCHITECTURE
+- Local SQLite database
+- No cloud sync (privacy-first)
+- Encrypted local storage
+- Export/backup functionality
+- No third-party analytics
+
+ALGORITHM APPROACH
+- Simple moving average (3-6 cycles)
+- Phase calculation based on cycle day
+- Symptom pattern recognition (basic)
+- Individual baseline establishment
+- Manual adjustment options
+
+UI/UX DESIGN PRINCIPLES
+- Clean, medical-inspired interface
+- Color-coded profiles
+- Intuitive gesture navigation
+- Quick-access daily logging
+- At-a-glance dashboard
+- Dark mode support
+PRIVACY & SECURITY
+- All data stored locally
+- No internet connectivity required
+- Biometric app lock option
+- No data sharing capabilities
+- No advertising or tracking
+- Profile data isolation
+
+MVP SCOPE (4-6 WEEKS)
+
+WEEK 1-2: Foundation
+- Flutter project setup
+- Database schema design
+- Basic profile management
+- Core data models
+- Navigation structure
+
+WEEK 3-4: Core Features
+- Cycle tracking calendar
+- Phase calculations
+- Basic symptom logging
+- Simple predictions
+- Profile switching
+
+WEEK 5-6: Polish & Testing
+- Notification system
+- Support suggestions
+- UI refinements
+- Testing & bug fixes
+- Documentation
+
+POST-MVP ITERATIONS
+- Advanced pattern recognition
+- Symptom correlation analysis
+- Export/sharing features
+- Widget support
+- Apple Watch companion
+- Backup/restore functionality
+
+SUCCESS METRICS
+- Accurate cycle predictions (±2 days)
+- Daily usage for logging
+- All family members tracked
+- Improved family support
+- Reduced surprise from symptoms
+
+NON-GOALS
+- Cloud sync/sharing
+- Social features
+- Medical advice
+- Fertility tracking
+- Data monetization
+- Complex ML algorithms
+USER STORIES
+
+AS A PARENT/PARTNER:
+- I want to track multiple family members' cycles so I can better support them
+- I want to see predictions for mood and energy changes
+- I want reminders about sensitive days ahead
+- I want to understand cycle phases to be more empathetic
+- I want to log observations to identify patterns
+- I want privacy and local-only data storage
+
+AS THE APP:
+- I will provide clear phase-based insights
+- I will predict symptoms based on past patterns
+- I will suggest supportive actions
+- I will maintain complete privacy
+- I will learn individual patterns over time
+
+ACCEPTANCE CRITERIA
+- User can create and manage 3+ profiles
+- Each profile tracks cycles independently
+- Phase predictions are accurate within 2 days
+- Daily logging takes less than 30 seconds
+- Support suggestions are relevant and helpful
+- All data remains local to device
+
+APPENDIX: SYMPTOM REFERENCE
+
+PHYSICAL SYMPTOMS BY PHASE:
+Menstrual: Cramps, fatigue, headaches, bloating, back pain
+Follicular: Increasing energy, clearer skin, improved sleep
+Ovulation: Mild cramping, increased temperature, cervical mucus
+Luteal: Breast tenderness, bloating, acne, fatigue
+
+EMOTIONAL SYMPTOMS BY PHASE:
+Menstrual: Irritability, introspection, emotional sensitivity
+Follicular: Optimism, motivation, creativity, social
+Ovulation: Confidence, assertiveness, high libido
+Luteal: Anxiety, mood swings, irritability, food cravings
+
+END OF DOCUMENT

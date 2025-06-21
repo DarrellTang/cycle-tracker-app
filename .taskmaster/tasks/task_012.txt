@@ -1,0 +1,59 @@
+# Task ID: 12
+# Title: Dashboard & Home Screen
+# Status: pending
+# Dependencies: 3, 4, 5, 6
+# Priority: medium
+# Description: Design and implement the main dashboard showing at-a-glance information for all profiles including current phases, upcoming events, and quick actions.
+# Details:
+1. Create home screen layout with profile cards
+2. Implement profile quick-switching
+3. Design at-a-glance widgets for each profile:
+   - Current phase indicator
+   - Days until next phase/period
+   - Today's predicted energy/mood
+   - Recent observations
+4. Add upcoming events section
+5. Create quick action buttons for common tasks
+6. Implement dashboard customization options
+7. Add data visualization widgets
+8. Create profile comparison view
+
+# Test Strategy:
+1. Widget tests for dashboard components
+2. Verify data accuracy in at-a-glance widgets
+3. Test profile switching functionality
+4. Integration tests for dashboard interactions
+5. Usability testing for information hierarchy
+6. Verify dashboard updates with new data
+
+# Subtasks:
+## 1. Home Screen Layout Design [pending]
+### Dependencies: None
+### Description: Design the overall layout and information architecture of the dashboard home screen
+### Details:
+Create wireframes and mockups for the dashboard layout including navigation, content areas, and responsive design considerations. Define the grid system for organizing family member cards, widgets, and action buttons. Ensure the design follows accessibility guidelines and maintains visual hierarchy for important information.
+
+## 2. Family Member Profile Cards Implementation [pending]
+### Dependencies: 12.1
+### Description: Develop the profile card components that display each family member's current phase and status
+### Details:
+Create reusable profile card components that display family member photo, name, current fertility phase, and status indicators. Implement visual cues for different phases (follicular, ovulation, luteal, menstrual) and attention indicators. Ensure cards are interactive and link to detailed individual profiles.
+
+## 3. At-a-Glance Widgets Development [pending]
+### Dependencies: 12.1
+### Description: Build widget components that display summarized information and predictions
+### Details:
+Develop modular widgets for upcoming predictions, calendar events, cycle statistics, and health insights. Create data visualization components (charts, graphs, timelines) that present complex information clearly. Implement real-time data updates and ensure widgets maintain performance with frequent refreshes.
+
+## 4. Quick Actions Implementation [pending]
+### Dependencies: 12.1, 12.2, 12.3
+### Description: Create the quick action buttons and functionality for common user tasks
+### Details:
+Implement action buttons for logging symptoms, adding notes, scheduling appointments, and accessing detailed reports. Create confirmation dialogs and feedback mechanisms for action completion. Ensure actions are contextual to the current user state and family member selected.
+
+## 5. Dashboard Customization Features [pending]
+### Dependencies: 12.1, 12.2, 12.3, 12.4
+### Description: Implement user preferences and customization options for the dashboard
+### Details:
+Create settings interface for users to customize dashboard layout, widget visibility, and information density. Implement drag-and-drop functionality for rearranging dashboard elements. Develop user preference storage and retrieval system. Add tutorial overlays for new users to understand customization options.
+

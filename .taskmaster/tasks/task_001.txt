@@ -1,0 +1,162 @@
+# Task ID: 1
+# Title: Flutter Project Setup & Architecture
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Initialize the Flutter project with the required dependencies and establish the foundational architecture for the Cycle Tracker App.
+# Details:
+1. Create a new Flutter project using the latest stable version
+2. Configure for both iOS and Android platforms
+3. Set up the project structure following clean architecture principles:
+   - data/ (repositories, data sources)
+   - domain/ (entities, use cases)
+   - presentation/ (UI, view models)
+4. Add required dependencies in pubspec.yaml:
+   - sqflite for local database
+   - provider or riverpod for state management
+   - fl_chart for visualization
+   - table_calendar for calendar views
+   - flutter_local_notifications for notifications
+   - local_auth for biometric authentication
+5. Configure app theme with support for dark mode
+6. Set up navigation using Navigator 2.0 or GoRouter
+7. Create CI/CD pipeline configuration
+
+# Test Strategy:
+1. Verify project builds successfully on both iOS and Android
+2. Run flutter analyze to ensure code quality
+3. Create basic widget tests for the app scaffold
+4. Test navigation between placeholder screens
+5. Verify theme switching functionality
+
+# Subtasks:
+## 1. Flutter Installation and Project Creation [pending]
+### Dependencies: None
+### Description: Set up Flutter SDK and create a new project with the recommended structure
+### Details:
+1. Install Flutter SDK: Download from flutter.dev and add to PATH
+2. Run 'flutter doctor' to verify installation
+3. Install Android Studio and/or Xcode
+4. Create project: 'flutter create my_app --org com.example'
+5. Verify setup: 'cd my_app && flutter run'
+
+Common pitfalls:
+- PATH configuration issues - ensure flutter/bin is in your PATH
+- Android SDK license agreements not accepted
+- Missing Xcode tools on macOS
+
+## 2. Dependency Management Setup [pending]
+### Dependencies: 1.1
+### Description: Configure essential packages and organize dependencies in pubspec.yaml
+### Details:
+1. Open pubspec.yaml in project root
+2. Add core dependencies:
+   ```yaml
+   dependencies:
+     flutter:
+       sdk: flutter
+     provider: ^6.0.0  # State management
+     http: ^0.13.5  # API requests
+     shared_preferences: ^2.0.15  # Local storage
+     flutter_bloc: ^8.1.1  # Alternative state management
+   ```
+3. Run 'flutter pub get'
+4. Create a dependencies.dart file to centralize imports
+
+Common pitfalls:
+- Version conflicts between packages
+- Incorrect YAML indentation
+- Missing 'flutter pub get' after changes
+
+## 3. Implement Clean Architecture Structure [pending]
+### Dependencies: 1.1, 1.2
+### Description: Set up project folders following clean architecture principles
+### Details:
+1. Create these directories in lib/:
+   - /presentation (UI components)
+     - /screens
+     - /widgets
+   - /domain (Business logic)
+     - /entities
+     - /repositories (interfaces)
+     - /usecases
+   - /data (Data sources)
+     - /repositories (implementations)
+     - /datasources
+     - /models
+   - /core (Shared utilities)
+
+2. Create sample files in each directory
+3. Implement dependency injection using provider or get_it package
+
+Common pitfalls:
+- Circular dependencies
+- Mixing concerns between layers
+- Overly complex folder structure for beginners
+
+## 4. Navigation and Routing Setup [pending]
+### Dependencies: 1.3
+### Description: Implement app navigation system with named routes
+### Details:
+1. Create a router.dart file in lib/core/
+2. Define route names as constants:
+   ```dart
+   class Routes {
+     static const String home = '/';
+     static const String details = '/details';
+   }
+   ```
+3. Set up route generation:
+   ```dart
+   Route<dynamic> generateRoute(RouteSettings settings) {
+     switch (settings.name) {
+       case Routes.home:
+         return MaterialPageRoute(builder: (_) => HomeScreen());
+       default:
+         return MaterialPageRoute(builder: (_) => NotFoundScreen());
+     }
+   }
+   ```
+4. Configure in main.dart:
+   ```dart
+   MaterialApp(
+     onGenerateRoute: generateRoute,
+     initialRoute: Routes.home,
+   )
+   ```
+
+Common pitfalls:
+- Forgetting to register routes
+- Navigation state management issues
+- Not handling unknown routes
+
+## 5. CI/CD Pipeline Configuration [pending]
+### Dependencies: 1.1, 1.2, 1.3
+### Description: Set up continuous integration and deployment for the Flutter project
+### Details:
+1. Create a .github/workflows directory in project root
+2. Add flutter-ci.yml file:
+   ```yaml
+   name: Flutter CI
+   on: [push, pull_request]
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v2
+         - uses: subosito/flutter-action@v2
+           with:
+             flutter-version: '3.3.0'
+         - run: flutter pub get
+         - run: flutter analyze
+         - run: flutter test
+   ```
+3. Configure Firebase App Distribution or Codemagic for deployment
+4. Add a README.md with build status badge
+
+Common pitfalls:
+- Missing environment secrets
+- Not caching build dependencies
+- Insufficient test coverage
+- Platform-specific build issues
+

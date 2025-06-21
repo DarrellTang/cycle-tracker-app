@@ -1,0 +1,59 @@
+# Task ID: 9
+# Title: Support Suggestions System
+# Status: pending
+# Dependencies: 5
+# Priority: medium
+# Description: Implement the system that provides phase-specific support suggestions, tips, and activity recommendations based on the current phase of each profile.
+# Details:
+1. Create database of support suggestions for each phase:
+   - Menstrual: comfort, rest, patience suggestions
+   - Follicular: activity planning, project support
+   - Ovulation: social plans, important discussions
+   - Luteal: patience, stress reduction, validation
+2. Implement SuggestionEngine to select relevant suggestions
+3. Design UI for daily tips display
+4. Create "What to expect" information cards
+5. Implement conversation starters feature
+6. Add activity suggestions based on energy levels
+7. Create helpful actions list for each phase
+8. Allow users to save favorite suggestions
+
+# Test Strategy:
+1. Unit tests for SuggestionEngine
+2. Verify phase-appropriate suggestions
+3. Widget tests for suggestion display
+4. Test suggestion relevance across different profiles
+5. Integration tests for suggestion interaction
+6. User feedback collection on suggestion helpfulness
+
+# Subtasks:
+## 1. Create Support Suggestions Database [pending]
+### Dependencies: None
+### Description: Develop a comprehensive database of practical support suggestions categorized by menstrual cycle phase
+### Details:
+Create a structured database with categories for each menstrual cycle phase (menstrual, follicular, ovulation, luteal). Include specific actionable suggestions like 'offer heating pads during cramps', 'prepare comfort foods', 'practice patience during menstrual phase', 'support new projects during follicular phase', 'schedule important discussions during ovulation', 'plan social events during ovulation', 'help reduce stress during luteal phase', 'validate feelings during luteal phase', 'provide favorite snacks during luteal phase'. Tag suggestions with attributes like effort level, preparation required, and emotional impact.
+
+## 2. Implement Suggestion Engine Algorithm [pending]
+### Dependencies: 9.1
+### Description: Develop the core algorithm that selects contextually appropriate support suggestions based on current menstrual cycle phase
+### Details:
+Create an algorithm that filters the suggestion database based on current menstrual cycle phase, user preferences, and previously shown suggestions. Implement weighting factors to prioritize timely suggestions (e.g., comfort measures during menstrual phase, social planning during ovulation). Include logic to avoid repetitive suggestions and ensure variety. Design the API endpoints that the UI will call to retrieve suggestions.
+
+## 3. Develop Phase-Specific UI Components [pending]
+### Dependencies: 9.2
+### Description: Create UI components to display support suggestions in an accessible, actionable format
+### Details:
+Design and implement UI cards/components that display cycle phase-specific suggestions with clear titles, descriptions, and optional steps. Include visual indicators for suggestion categories (physical support, emotional support, practical help). Create layouts for different device sizes. Implement a 'mark as done' feature and a way to save favorite suggestions. Ensure accessibility compliance for all components.
+
+## 4. Implement User Interaction Features [pending]
+### Dependencies: 9.3
+### Description: Add features allowing users to interact with, save, and provide feedback on suggestions
+### Details:
+Implement functionality for users to bookmark helpful suggestions, dismiss irrelevant ones, and rate suggestion usefulness. Create a 'Saved Suggestions' section for quick reference. Add the ability for users to set reminders for specific suggestions (like preparing heating pads before menstrual phase or scheduling important talks during ovulation). Develop a feedback mechanism to improve suggestion quality over time. Include a feature to share suggestions with others via messaging or email.
+
+## 5. Test and Refine Suggestion System [pending]
+### Dependencies: 9.4
+### Description: Conduct comprehensive testing of the suggestion system with real users and refine based on feedback
+### Details:
+Perform usability testing with users across different menstrual cycle phases. Collect data on which suggestions are most frequently used, saved, or dismissed. Analyze patterns to improve the suggestion algorithm. Refine content based on user feedback. Test edge cases like transitions between phases. Optimize performance for quick loading of suggestions. Verify that menstrual phase comfort suggestions, follicular phase activity planning, ovulation phase social planning, and luteal phase stress reduction suggestions are all relevant and helpful.
+

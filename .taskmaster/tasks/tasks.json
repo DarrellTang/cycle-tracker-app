@@ -17,7 +17,7 @@
             "description": "Set up Flutter SDK and create a new project with the recommended structure",
             "dependencies": [],
             "details": "1. Install Flutter SDK: Download from flutter.dev and add to PATH\n2. Run 'flutter doctor' to verify installation\n3. Install Android Studio and/or Xcode\n4. Create project: 'flutter create my_app --org com.example'\n5. Verify setup: 'cd my_app && flutter run'\n\nCommon pitfalls:\n- PATH configuration issues - ensure flutter/bin is in your PATH\n- Android SDK license agreements not accepted\n- Missing Xcode tools on macOS",
-            "status": "in-progress"
+            "status": "done"
           },
           {
             "id": 2,
@@ -27,7 +27,7 @@
               1
             ],
             "details": "1. Open pubspec.yaml in project root\n2. Add core dependencies:\n   ```yaml\n   dependencies:\n     flutter:\n       sdk: flutter\n     provider: ^6.0.0  # State management\n     http: ^0.13.5  # API requests\n     shared_preferences: ^2.0.15  # Local storage\n     flutter_bloc: ^8.1.1  # Alternative state management\n   ```\n3. Run 'flutter pub get'\n4. Create a dependencies.dart file to centralize imports\n\nCommon pitfalls:\n- Version conflicts between packages\n- Incorrect YAML indentation\n- Missing 'flutter pub get' after changes",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 3,
@@ -38,7 +38,7 @@
               2
             ],
             "details": "1. Create these directories in lib/:\n   - /presentation (UI components)\n     - /screens\n     - /widgets\n   - /domain (Business logic)\n     - /entities\n     - /repositories (interfaces)\n     - /usecases\n   - /data (Data sources)\n     - /repositories (implementations)\n     - /datasources\n     - /models\n   - /core (Shared utilities)\n\n2. Create sample files in each directory\n3. Implement dependency injection using provider or get_it package\n\nCommon pitfalls:\n- Circular dependencies\n- Mixing concerns between layers\n- Overly complex folder structure for beginners",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 4,
@@ -1045,7 +1045,7 @@
     ],
     "metadata": {
       "created": "2025-06-20T23:26:48.800Z",
-      "updated": "2025-06-21T03:47:32.388Z",
+      "updated": "2025-06-21T18:37:05.270Z",
       "description": "Tasks for master context"
     }
   }

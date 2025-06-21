@@ -78,6 +78,24 @@ This project uses TaskMaster for project management. Key files:
 - `.taskmaster/tasks/tasks.json` - Detailed task breakdown
 - `.taskmaster/config.json` - TaskMaster configuration
 
+### TaskMaster CLI Commands
+
+```bash
+# Task Management
+task-master list --with-subtasks           # List all tasks and subtasks
+task-master next                           # Show next task to work on
+task-master show <id>                      # Show detailed task information
+task-master set-status --id=<id> --status=<status>  # Update task status
+
+# Task Status Options
+# pending, in-progress, done, review, deferred, cancelled
+
+# Examples
+task-master show 1.3                       # Show details for subtask 1.3
+task-master set-status --id=1.3 --status=in-progress
+task-master set-status --id=1.3 --status=done
+```
+
 ## Development Phases
 
 1. **Foundation** (Weeks 1-2): Flutter setup, database schema, basic profiles

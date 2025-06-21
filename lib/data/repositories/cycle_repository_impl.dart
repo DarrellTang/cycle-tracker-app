@@ -2,99 +2,48 @@ import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/domain/entities/cycle_record.dart';
 import 'package:cycle_tracker_app/domain/repositories/cycle_repository.dart';
 import 'package:cycle_tracker_app/data/models/cycle_record_model.dart';
-import 'package:cycle_tracker_app/data/datasources/local_database.dart';
+import 'package:cycle_tracker_app/data/datasources/database_helper.dart';
 
 /// Implementation of CycleRepository using local SQLite database
 class CycleRepositoryImpl implements CycleRepository {
   @override
   Future<List<CycleRecord>> getCyclesByProfileId(String profileId) async {
-    final db = await LocalDatabase.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      LocalDatabase.cyclesTable,
-      where: 'profile_id = ?',
-      whereArgs: [profileId],
-      orderBy: 'start_date DESC',
-    );
-
-    return maps
-        .map((map) => CycleRecordModel.fromJson(map).toEntity())
-        .toList();
+    final cycles = await DatabaseHelper.getCyclesByProfileId(profileId);
+    return cycles.map((cycle) => cycle.toEntity()).toList();
   }
 
   @override
   Future<CycleRecord?> getLatestCycleByProfileId(String profileId) async {
-    final db = await LocalDatabase.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      LocalDatabase.cyclesTable,
-      where: 'profile_id = ?',
-      whereArgs: [profileId],
-      orderBy: 'start_date DESC',
-      limit: 1,
-    );
-
-    if (maps.isEmpty) {
-      return null;
-    }
-
-    return CycleRecordModel.fromJson(maps.first).toEntity();
+    final cycles = await DatabaseHelper.getCyclesByProfileId(profileId);
+    return cycles.isNotEmpty ? cycles.first.toEntity() : null;
   }
 
   @override
   Future<CycleRecord?> getCycleById(String id) async {
-    final db = await LocalDatabase.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      LocalDatabase.cyclesTable,
-      where: 'id = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
-
-    if (maps.isEmpty) {
-      return null;
-    }
-
-    return CycleRecordModel.fromJson(maps.first).toEntity();
+    final cycles = await DatabaseHelper.getCyclesByProfileId('');
+    final cycle = cycles.where((c) => c.id == id).firstOrNull;
+    return cycle?.toEntity();
   }
 
   @override
   Future<CycleRecord> createCycle(CycleRecord cycle) async {
-    final db = await LocalDatabase.database;
     final model = CycleRecordModel.fromEntity(cycle);
-
-    await db.insert(
-      LocalDatabase.cyclesTable,
-      model.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-
+    await DatabaseHelper.insertCycleRecord(model);
     return model.toEntity();
   }
 
   @override
   Future<CycleRecord> updateCycle(CycleRecord cycle) async {
-    final db = await LocalDatabase.database;
     final model = CycleRecordModel.fromEntity(
       cycle.copyWith(updatedAt: DateTime.now()),
     );
-
-    await db.update(
-      LocalDatabase.cyclesTable,
-      model.toJson(),
-      where: 'id = ?',
-      whereArgs: [cycle.id],
-    );
-
+    await DatabaseHelper.updateCycleRecord(model);
     return model.toEntity();
   }
 
   @override
   Future<void> deleteCycle(String id) async {
-    final db = await LocalDatabase.database;
-    await db.delete(
-      LocalDatabase.cyclesTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await DatabaseHelper.deleteCycleRecord(id);
   }
 
   @override
@@ -103,20 +52,11 @@ class CycleRepositoryImpl implements CycleRepository {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    final db = await LocalDatabase.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      LocalDatabase.cyclesTable,
-      where: 'profile_id = ? AND start_date >= ? AND start_date <= ?',
-      whereArgs: [
-        profileId,
-        startDate.toIso8601String(),
-        endDate.toIso8601String(),
-      ],
-      orderBy: 'start_date DESC',
-    );
-
-    return maps
-        .map((map) => CycleRecordModel.fromJson(map).toEntity())
-        .toList();
+    final cycles = await DatabaseHelper.getCyclesByProfileId(profileId);
+    final filtered = cycles.where((cycle) {
+      return cycle.startDate.isAfter(startDate) && 
+             cycle.startDate.isBefore(endDate);
+    }).toList();
+    return filtered.map((cycle) => cycle.toEntity()).toList();
   }
 }

@@ -9,7 +9,7 @@
         "testStrategy": "1. Verify project builds successfully on both iOS and Android\n2. Run flutter analyze to ensure code quality\n3. Create basic widget tests for the app scaffold\n4. Test navigation between placeholder screens\n5. Verify theme switching functionality",
         "priority": "high",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -74,7 +74,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -82,7 +82,7 @@
             "description": "Identify all entities, attributes, and relationships needed for the application",
             "dependencies": [],
             "details": "Create a comprehensive list of all data entities (users, tasks, categories, etc.) with their attributes. Define primary keys, foreign keys, and relationships between tables. Consider data types, constraints, and indexing needs. Example: User table with fields like id (INTEGER PRIMARY KEY), name (TEXT), email (TEXT UNIQUE), created_at (TIMESTAMP), etc. Draw an Entity-Relationship Diagram (ERD) to visualize the schema.",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 2,
@@ -92,7 +92,7 @@
               1
             ],
             "details": "Create a DatabaseHelper class that extends sqflite's Database class. Implement singleton pattern for database access. Add methods for database initialization, version management, and table creation. Example code:\n```dart\nclass DatabaseHelper {\n  static final DatabaseHelper _instance = DatabaseHelper._internal();\n  static Database? _database;\n  \n  factory DatabaseHelper() => _instance;\n  \n  DatabaseHelper._internal();\n  \n  Future<Database> get database async {\n    if (_database != null) return _database!;\n    _database = await _initDatabase();\n    return _database!;\n  }\n  \n  Future<Database> _initDatabase() async {\n    String path = join(await getDatabasesPath(), 'app_database.db');\n    return await openDatabase(path, version: 1, onCreate: _onCreate);\n  }\n  \n  Future<void> _onCreate(Database db, int version) async {\n    await db.execute(\n      'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'\n    );\n    // Create other tables\n  }\n}\n```",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 3,
@@ -102,7 +102,7 @@
               2
             ],
             "details": "Research and select an encryption library compatible with Flutter (e.g., encrypt, flutter_secure_storage). Create utility functions for encrypting/decrypting data. Identify which fields need encryption (e.g., personal info, credentials). Modify database operations to encrypt data before storage and decrypt after retrieval. Example:\n```dart\nclass EncryptionService {\n  final key = Key.fromUtf8('your-32-character-secret-key-here');\n  final iv = IV.fromLength(16);\n  late final Encrypter _encrypter;\n  \n  EncryptionService() {\n    _encrypter = Encrypter(AES(key));\n  }\n  \n  String encrypt(String text) {\n    return _encrypter.encrypt(text, iv: iv).base64;\n  }\n  \n  String decrypt(String encryptedText) {\n    return _encrypter.decrypt64(encryptedText, iv: iv);\n  }\n}\n```",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 4,
@@ -113,7 +113,7 @@
               3
             ],
             "details": "Create an abstract BaseRepository interface with CRUD operations. Implement concrete repositories for each entity (UserRepository, TaskRepository, etc.). Use dependency injection for database access. Example:\n```dart\nabstract class BaseRepository<T> {\n  Future<int> insert(T item);\n  Future<int> update(T item);\n  Future<int> delete(int id);\n  Future<T?> getById(int id);\n  Future<List<T>> getAll();\n}\n\nclass UserRepository implements BaseRepository<User> {\n  final DatabaseHelper _dbHelper;\n  final EncryptionService _encryptionService;\n  \n  UserRepository(this._dbHelper, this._encryptionService);\n  \n  @override\n  Future<int> insert(User user) async {\n    final db = await _dbHelper.database;\n    // Encrypt sensitive data\n    final encryptedEmail = _encryptionService.encrypt(user.email);\n    return await db.insert('users', {\n      'name': user.name,\n      'email': encryptedEmail,\n      // other fields\n    });\n  }\n  \n  // Implement other methods\n}\n```",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 5,
@@ -123,7 +123,7 @@
               2
             ],
             "details": "Implement version-based migration system using sqflite's onUpgrade callback. Create migration scripts for potential schema changes. Test migration paths from each version to the next. Example:\n```dart\nFuture<Database> _initDatabase() async {\n  String path = join(await getDatabasesPath(), 'app_database.db');\n  return await openDatabase(\n    path,\n    version: 2, // Increment when schema changes\n    onCreate: _onCreate,\n    onUpgrade: _onUpgrade,\n  );\n}\n\nFuture<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {\n  if (oldVersion < 2) {\n    // Migration from version 1 to 2\n    await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT');\n  }\n  // Add more version checks for future migrations\n}\n```",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 6,
@@ -134,7 +134,7 @@
               5
             ],
             "details": "Identify frequently used queries and optimize them. Add appropriate indexes to speed up lookups. Implement batch operations for bulk inserts/updates. Use transactions for related operations. Example:\n```dart\n// Adding indexes during table creation\nFuture<void> _onCreate(Database db, int version) async {\n  await db.execute(\n    'CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE)'\n  );\n  await db.execute('CREATE INDEX idx_user_email ON users(email)');\n  \n  // Using transactions for related operations\n  Future<void> createUserWithSettings(User user, UserSettings settings) async {\n    final db = await _dbHelper.database;\n    await db.transaction((txn) async {\n      int userId = await txn.insert('users', user.toMap());\n      settings.userId = userId;\n      await txn.insert('user_settings', settings.toMap());\n    });\n  }\n}\n```",
-            "status": "pending"
+            "status": "done"
           }
         ]
       },
@@ -1045,7 +1045,7 @@
     ],
     "metadata": {
       "created": "2025-06-20T23:26:48.800Z",
-      "updated": "2025-06-21T18:58:54.358Z",
+      "updated": "2025-06-21T23:47:07.046Z",
       "description": "Tasks for master context"
     }
   }

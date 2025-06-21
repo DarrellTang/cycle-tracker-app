@@ -1,4 +1,5 @@
 import 'package:cycle_tracker_app/dependencies.dart';
+import 'package:cycle_tracker_app/core/router.dart';
 
 /// Home screen displaying family member profiles and cycle overview
 class HomeScreen extends ConsumerWidget {
@@ -11,18 +12,46 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Cycle Tracker'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Welcome to Cycle Tracker',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Track and understand family menstrual cycles',
               style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'Test Navigation:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, Routes.profile),
+                  child: const Text('Profile'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, Routes.cycleDetails),
+                  child: const Text('Cycle Details'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, Routes.settings),
+                  child: const Text('Settings'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/invalid-route'),
+                  child: const Text('404 Test'),
+                ),
+              ],
             ),
           ],
         ),

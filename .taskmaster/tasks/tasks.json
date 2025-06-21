@@ -48,7 +48,7 @@
               3
             ],
             "details": "1. Create a router.dart file in lib/core/\n2. Define route names as constants:\n   ```dart\n   class Routes {\n     static const String home = '/';\n     static const String details = '/details';\n   }\n   ```\n3. Set up route generation:\n   ```dart\n   Route<dynamic> generateRoute(RouteSettings settings) {\n     switch (settings.name) {\n       case Routes.home:\n         return MaterialPageRoute(builder: (_) => HomeScreen());\n       default:\n         return MaterialPageRoute(builder: (_) => NotFoundScreen());\n     }\n   }\n   ```\n4. Configure in main.dart:\n   ```dart\n   MaterialApp(\n     onGenerateRoute: generateRoute,\n     initialRoute: Routes.home,\n   )\n   ```\n\nCommon pitfalls:\n- Forgetting to register routes\n- Navigation state management issues\n- Not handling unknown routes",
-            "status": "pending"
+            "status": "done"
           },
           {
             "id": 5,
@@ -1045,7 +1045,7 @@
     ],
     "metadata": {
       "created": "2025-06-20T23:26:48.800Z",
-      "updated": "2025-06-21T18:37:05.270Z",
+      "updated": "2025-06-21T18:45:13.995Z",
       "description": "Tasks for master context"
     }
   }

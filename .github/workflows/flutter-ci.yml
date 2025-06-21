@@ -7,6 +7,8 @@ on:
     branches: [ main, develop ]
 
 jobs:
+  # Lightweight CI for early development - analyze and test only
+  # TODO: Add builds (APK, iOS) and coverage reporting when ready for production
   build:
     runs-on: ubuntu-latest
 
@@ -31,59 +33,4 @@ jobs:
       run: flutter analyze --fatal-infos
 
     - name: Run tests
-      run: flutter test --coverage
-
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: coverage/lcov.info
-        token: ${{ secrets.CODECOV_TOKEN }}
-      if: success()
-
-  build-apk:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.4'
-        channel: 'stable'
-        cache: true
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Build APK
-      run: flutter build apk --debug
-
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-apk
-        path: build/app/outputs/flutter-apk/app-debug.apk
-
-  build-ios:
-    runs-on: macos-latest
-    needs: build
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.4'
-        channel: 'stable'
-        cache: true
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Build iOS (no codesign)
-      run: flutter build ios --no-codesign --debug
+      run: flutter test

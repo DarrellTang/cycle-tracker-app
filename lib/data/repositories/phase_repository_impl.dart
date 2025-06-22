@@ -61,12 +61,15 @@ class PhaseRepositoryImpl implements PhaseRepository {
     String profileId,
     int cyclesToAnalyze,
   ) async {
-    final recentCycles = await DatabaseHelper.getRecentCycles(profileId, cyclesToAnalyze);
+    final recentCycles = await DatabaseHelper.getRecentCycles(
+      profileId,
+      cyclesToAnalyze,
+    );
     final phaseDurations = <PhaseType, List<int>>{};
 
     for (final cycle in recentCycles) {
       final phases = await DatabaseHelper.getPhasesByCycleId(cycle.id);
-      
+
       for (final phase in phases) {
         final duration = phase.endDay - phase.startDay + 1;
         phaseDurations[phase.phaseType] ??= [];
@@ -149,8 +152,8 @@ class PhaseRepositoryImpl implements PhaseRepository {
     // Get cycles in the date range
     final cycles = await DatabaseHelper.getCyclesByProfileId(profileId);
     final cyclesInRange = cycles.where((cycle) {
-      return cycle.startDate.isAfter(startDate) && 
-             cycle.startDate.isBefore(endDate);
+      return cycle.startDate.isAfter(startDate) &&
+          cycle.startDate.isBefore(endDate);
     }).toList();
 
     final allPhases = <PhaseModel>[];

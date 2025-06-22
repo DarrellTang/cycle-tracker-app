@@ -54,8 +54,8 @@ class CycleRepositoryImpl implements CycleRepository {
   ) async {
     final cycles = await DatabaseHelper.getCyclesByProfileId(profileId);
     final filtered = cycles.where((cycle) {
-      return cycle.startDate.isAfter(startDate) && 
-             cycle.startDate.isBefore(endDate);
+      return cycle.startDate.isAfter(startDate) &&
+          cycle.startDate.isBefore(endDate);
     }).toList();
     return filtered.map((cycle) => cycle.toEntity()).toList();
   }

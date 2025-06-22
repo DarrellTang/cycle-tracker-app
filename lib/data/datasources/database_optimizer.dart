@@ -22,7 +22,10 @@ class DatabaseOptimizer {
       analysis['query_statistics'] = queryStats;
 
       // Suggest optimizations
-      final suggestions = _generateOptimizationSuggestions(indexUsage, tableSizes);
+      final suggestions = _generateOptimizationSuggestions(
+        indexUsage,
+        tableSizes,
+      );
       analysis['optimization_suggestions'] = suggestions;
 
       return analysis;
@@ -39,7 +42,7 @@ class DatabaseOptimizer {
     try {
       // Get all indexes
       final indexes = await db.rawQuery(
-        "SELECT name, tbl_name, sql FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'"
+        "SELECT name, tbl_name, sql FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'",
       );
 
       indexInfo['total_indexes'] = indexes.length;
@@ -48,9 +51,11 @@ class DatabaseOptimizer {
       for (final index in indexes) {
         final tableName = index['tbl_name'] as String;
         final indexName = index['name'] as String;
-        
+
         indexInfo['indexes_by_table'][tableName] ??= <String>[];
-        (indexInfo['indexes_by_table'][tableName] as List<String>).add(indexName);
+        (indexInfo['indexes_by_table'][tableName] as List<String>).add(
+          indexName,
+        );
       }
 
       return indexInfo;
@@ -73,7 +78,9 @@ class DatabaseOptimizer {
 
     for (final tableName in tables) {
       try {
-        final result = await db.rawQuery('SELECT COUNT(*) as count FROM $tableName');
+        final result = await db.rawQuery(
+          'SELECT COUNT(*) as count FROM $tableName',
+        );
         tableSizes[tableName] = Sqflite.firstIntValue(result) ?? 0;
       } catch (e) {
         tableSizes[tableName] = -1; // Error indicator
@@ -90,16 +97,16 @@ class DatabaseOptimizer {
     try {
       // SQLite doesn't provide query statistics by default
       // We'll simulate some basic checks
-      
+
       // Check for slow queries by testing common operations
       final stopwatch = Stopwatch()..start();
-      
+
       // Test profile queries
       await db.query(LocalDatabase.profilesTable, limit: 100);
       stats['profile_query_ms'] = stopwatch.elapsedMilliseconds;
-      
+
       stopwatch.reset();
-      
+
       // Test cycle queries with joins
       await db.rawQuery('''
         SELECT c.*, COUNT(s.id) as symptom_count 
@@ -109,9 +116,9 @@ class DatabaseOptimizer {
         LIMIT 50
       ''');
       stats['cycle_join_query_ms'] = stopwatch.elapsedMilliseconds;
-      
+
       stopwatch.stop();
-      
+
       return stats;
     } catch (e) {
       return {'error': 'Failed to get query statistics: $e'};
@@ -128,9 +135,12 @@ class DatabaseOptimizer {
     // Check for large tables without proper indexing
     tableSizes.forEach((tableName, rowCount) {
       if (rowCount > 1000) {
-        final tableIndexes = indexUsage['indexes_by_table'][tableName] as List<String>?;
+        final tableIndexes =
+            indexUsage['indexes_by_table'][tableName] as List<String>?;
         if (tableIndexes == null || tableIndexes.length < 2) {
-          suggestions.add('Consider adding more indexes to $tableName ($rowCount rows)');
+          suggestions.add(
+            'Consider adding more indexes to $tableName ($rowCount rows)',
+          );
         }
       }
     });
@@ -145,8 +155,12 @@ class DatabaseOptimizer {
     }
 
     // Suggest composite indexes for common query patterns
-    suggestions.add('Consider composite index on (profile_id, date) for symptoms table');
-    suggestions.add('Consider composite index on (profile_id, start_date) for cycles table');
+    suggestions.add(
+      'Consider composite index on (profile_id, date) for symptoms table',
+    );
+    suggestions.add(
+      'Consider composite index on (profile_id, start_date) for cycles table',
+    );
 
     return suggestions;
   }
@@ -204,13 +218,13 @@ class DatabaseOptimizer {
     try {
       // Update table statistics
       await db.execute('ANALYZE');
-      
+
       // Rebuild database to reclaim space
       await db.execute('VACUUM');
-      
+
       // Enable query planner optimizations
       await db.execute('PRAGMA optimize');
-      
+
       print('Database optimization completed');
     } catch (e) {
       print('Failed to optimize database: $e');
@@ -251,7 +265,10 @@ class DatabaseOptimizer {
   }
 
   /// Get optimized query for cycle analysis
-  static String getOptimizedCycleAnalysisQuery(String profileId, int cyclesToAnalyze) {
+  static String getOptimizedCycleAnalysisQuery(
+    String profileId,
+    int cyclesToAnalyze,
+  ) {
     return '''
       SELECT 
         c.*,
@@ -322,22 +339,22 @@ class DatabaseOptimizer {
     try {
       // Enable foreign key constraints
       await db.execute('PRAGMA foreign_keys = ON');
-      
+
       // Set journal mode to WAL for better concurrent access
       await db.execute('PRAGMA journal_mode = WAL');
-      
+
       // Set synchronous mode to NORMAL for balance between safety and speed
       await db.execute('PRAGMA synchronous = NORMAL');
-      
+
       // Set cache size (negative value means KB, positive means pages)
       await db.execute('PRAGMA cache_size = -32000'); // 32MB cache
-      
+
       // Set temp store to memory for better performance
       await db.execute('PRAGMA temp_store = MEMORY');
-      
+
       // Enable mmap for better read performance
       await db.execute('PRAGMA mmap_size = 67108864'); // 64MB
-      
+
       print('Database performance settings configured');
     } catch (e) {
       print('Failed to configure database settings: $e');

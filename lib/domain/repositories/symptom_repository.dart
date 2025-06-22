@@ -18,9 +18,10 @@ abstract class SymptomRepository {
   /// Get symptoms by type for analysis
   Future<List<Symptom>> getSymptomsByType(
     String profileId,
-    SymptomType symptomType,
-    {DateTime? startDate, DateTime? endDate}
-  );
+    SymptomType symptomType, {
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 
   /// Update an existing symptom
   Future<Symptom> updateSymptom(Symptom symptom);
@@ -35,8 +36,5 @@ abstract class SymptomRepository {
   );
 
   /// Get common symptoms for a specific cycle phase
-  Future<List<Symptom>> getSymptomsForPhase(
-    String profileId,
-    String phaseType,
-  );
+  Future<List<Symptom>> getSymptomsForPhase(String profileId, String phaseType);
 }

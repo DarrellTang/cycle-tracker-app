@@ -26,16 +26,16 @@ class CycleNotification extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        profileId,
-        notificationType,
-        title,
-        message,
-        scheduledDate,
-        isSent,
-        isEnabled,
-        createdAt,
-      ];
+    id,
+    profileId,
+    notificationType,
+    title,
+    message,
+    scheduledDate,
+    isSent,
+    isEnabled,
+    createdAt,
+  ];
 
   CycleNotification copyWith({
     String? id,

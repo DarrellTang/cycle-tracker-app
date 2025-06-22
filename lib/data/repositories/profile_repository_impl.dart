@@ -42,9 +42,11 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<List<Profile>> searchProfiles(String query) async {
     final profiles = await DatabaseHelper.getAllProfiles();
-    final filtered = profiles.where((profile) => 
-      profile.name.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    final filtered = profiles
+        .where(
+          (profile) => profile.name.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
     return filtered.map((profile) => profile.toEntity()).toList();
   }
 }

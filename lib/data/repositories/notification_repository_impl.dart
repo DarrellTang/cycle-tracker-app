@@ -7,7 +7,9 @@ import 'package:cycle_tracker_app/dependencies.dart';
 /// Implementation of NotificationRepository using local SQLite database
 class NotificationRepositoryImpl implements NotificationRepository {
   @override
-  Future<CycleNotification> createNotification(CycleNotification notification) async {
+  Future<CycleNotification> createNotification(
+    CycleNotification notification,
+  ) async {
     final model = CycleNotificationModel.fromEntity(notification);
     await DatabaseHelper.insertNotification(model);
     return model.toEntity();
@@ -16,13 +18,21 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<List<CycleNotification>> getPendingNotifications() async {
     final notifications = await DatabaseHelper.getPendingNotifications();
-    return notifications.map((notification) => notification.toEntity()).toList();
+    return notifications
+        .map((notification) => notification.toEntity())
+        .toList();
   }
 
   @override
-  Future<List<CycleNotification>> getNotificationsByProfileId(String profileId) async {
-    final notifications = await DatabaseHelper.getNotificationsByProfileId(profileId);
-    return notifications.map((notification) => notification.toEntity()).toList();
+  Future<List<CycleNotification>> getNotificationsByProfileId(
+    String profileId,
+  ) async {
+    final notifications = await DatabaseHelper.getNotificationsByProfileId(
+      profileId,
+    );
+    return notifications
+        .map((notification) => notification.toEntity())
+        .toList();
   }
 
   @override
@@ -31,17 +41,25 @@ class NotificationRepositoryImpl implements NotificationRepository {
     String? profileId,
   }) async {
     List<CycleNotificationModel> notifications;
-    
+
     if (profileId != null) {
-      notifications = await DatabaseHelper.getNotificationsByProfileId(profileId);
-      notifications = notifications.where((n) => n.notificationType == type).toList();
+      notifications = await DatabaseHelper.getNotificationsByProfileId(
+        profileId,
+      );
+      notifications = notifications
+          .where((n) => n.notificationType == type)
+          .toList();
     } else {
       // Get all notifications and filter by type
       final allNotifications = await DatabaseHelper.getPendingNotifications();
-      notifications = allNotifications.where((n) => n.notificationType == type).toList();
+      notifications = allNotifications
+          .where((n) => n.notificationType == type)
+          .toList();
     }
 
-    return notifications.map((notification) => notification.toEntity()).toList();
+    return notifications
+        .map((notification) => notification.toEntity())
+        .toList();
   }
 
   @override
@@ -50,9 +68,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<CycleNotification> updateNotification(CycleNotification notification) async {
+  Future<CycleNotification> updateNotification(
+    CycleNotification notification,
+  ) async {
     final model = CycleNotificationModel.fromEntity(notification);
-    await DatabaseHelper.insertNotification(model); // Uses REPLACE conflict algorithm
+    await DatabaseHelper.insertNotification(
+      model,
+    ); // Uses REPLACE conflict algorithm
     return model.toEntity();
   }
 
@@ -72,8 +94,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final notifications = <CycleNotification>[];
 
     // Calculate phase transition dates
-    final follicularEnd = cycleStartDate.add(Duration(days: (cycleLength * 0.5).round()));
-    final ovulationEnd = cycleStartDate.add(Duration(days: (cycleLength * 0.6).round()));
+    final follicularEnd = cycleStartDate.add(
+      Duration(days: (cycleLength * 0.5).round()),
+    );
+    final ovulationEnd = cycleStartDate.add(
+      Duration(days: (cycleLength * 0.6).round()),
+    );
     final lutealEnd = cycleStartDate.add(Duration(days: cycleLength));
 
     // Phase transition notifications
@@ -83,8 +109,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
         profileId: profileId,
         notificationType: NotificationType.phaseTransition,
         title: 'Phase Transition',
-        message: 'Follicular phase beginning - energy levels may start increasing',
-        scheduledDate: cycleStartDate.add(const Duration(days: 5)), // End of menstrual
+        message:
+            'Follicular phase beginning - energy levels may start increasing',
+        scheduledDate: cycleStartDate.add(
+          const Duration(days: 5),
+        ), // End of menstrual
         createdAt: now,
       ),
       CycleNotification(
@@ -92,7 +121,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
         profileId: profileId,
         notificationType: NotificationType.phaseTransition,
         title: 'Ovulation Phase',
-        message: 'Ovulation phase starting - peak energy and confidence expected',
+        message:
+            'Ovulation phase starting - peak energy and confidence expected',
         scheduledDate: follicularEnd,
         createdAt: now,
       ),
@@ -122,13 +152,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
     DateTime expectedStartDate,
   ) async {
     const uuid = Uuid();
-    
+
     final notification = CycleNotification(
       id: uuid.v4(),
       profileId: profileId,
       notificationType: NotificationType.periodStart,
       title: 'Period Expected',
-      message: 'Period is expected to start soon. Consider preparing comfort items.',
+      message:
+          'Period is expected to start soon. Consider preparing comfort items.',
       scheduledDate: expectedStartDate.subtract(const Duration(days: 1)),
       createdAt: DateTime.now(),
     );
@@ -139,8 +170,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<void> cancelNotificationsForProfile(String profileId) async {
-    final notifications = await DatabaseHelper.getNotificationsByProfileId(profileId);
-    
+    final notifications = await DatabaseHelper.getNotificationsByProfileId(
+      profileId,
+    );
+
     for (final notification in notifications) {
       if (!notification.isSent) {
         await DatabaseHelper.deleteNotification(notification.id);
@@ -154,11 +187,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    final notifications = await DatabaseHelper.getNotificationsByProfileId(profileId);
-    
+    final notifications = await DatabaseHelper.getNotificationsByProfileId(
+      profileId,
+    );
+
     final history = notifications.where((notification) {
       return notification.scheduledDate.isAfter(startDate) &&
-             notification.scheduledDate.isBefore(endDate);
+          notification.scheduledDate.isBefore(endDate);
     }).toList();
 
     return history.map((notification) => notification.toEntity()).toList();

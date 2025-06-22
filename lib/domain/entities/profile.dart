@@ -63,17 +63,17 @@ class Profile extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        birthDate,
-        photoPath,
-        colorCode,
-        defaultCycleLength,
-        defaultPeriodLength,
-        trackingPreferences,
-        privacySettings,
-        isActive,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    birthDate,
+    photoPath,
+    colorCode,
+    defaultCycleLength,
+    defaultPeriodLength,
+    trackingPreferences,
+    privacySettings,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
 }

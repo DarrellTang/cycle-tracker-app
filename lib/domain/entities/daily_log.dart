@@ -38,22 +38,22 @@ class DailyLog extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        profileId,
-        date,
-        energyLevel,
-        mood,
-        moodStability,
-        stressLevel,
-        sleepQuality,
-        appetiteChanges,
-        socialPreference,
-        emotionalNeeds,
-        observations,
-        customNotes,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    profileId,
+    date,
+    energyLevel,
+    mood,
+    moodStability,
+    stressLevel,
+    sleepQuality,
+    appetiteChanges,
+    socialPreference,
+    emotionalNeeds,
+    observations,
+    customNotes,
+    createdAt,
+    updatedAt,
+  ];
 
   DailyLog copyWith({
     String? id,
@@ -134,14 +134,7 @@ extension MoodTypeExtension on MoodType {
 }
 
 /// Enumeration of appetite changes
-enum AppetiteChange {
-  normal,
-  increased,
-  decreased,
-  cravings,
-  nausea,
-  aversion,
-}
+enum AppetiteChange { normal, increased, decreased, cravings, nausea, aversion }
 
 extension AppetiteChangeExtension on AppetiteChange {
   String get displayName {

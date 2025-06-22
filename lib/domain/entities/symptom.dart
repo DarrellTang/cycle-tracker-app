@@ -22,14 +22,14 @@ class Symptom extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        profileId,
-        date,
-        symptomType,
-        severity,
-        notes,
-        createdAt,
-      ];
+    id,
+    profileId,
+    date,
+    symptomType,
+    severity,
+    notes,
+    createdAt,
+  ];
 
   Symptom copyWith({
     String? id,
@@ -65,7 +65,7 @@ enum SymptomType {
   nausea,
   sleepIssues,
   appetiteChanges,
-  
+
   // Emotional symptoms
   irritability,
   anxiety,
@@ -75,14 +75,14 @@ enum SymptomType {
   sensitivity,
   stressIntolerance,
   socialWithdrawal,
-  
+
   // Energy and cognitive
   lowEnergy,
   highEnergy,
   brainfog,
   concentration,
   motivation,
-  
+
   // Other
   other,
 }

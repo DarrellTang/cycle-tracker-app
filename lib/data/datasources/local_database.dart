@@ -39,7 +39,7 @@ class LocalDatabase {
       onUpgrade: _onUpgrade,
       onOpen: _onOpen,
     );
-    
+
     return database;
   }
 
@@ -184,16 +184,16 @@ class LocalDatabase {
   ) async {
     // Create backup before migration
     await DatabaseMigration.createBackup();
-    
+
     // Execute migration
     await DatabaseMigration.migrate(db, oldVersion, newVersion);
-    
+
     // Validate database integrity after migration
     final isValid = await DatabaseMigration.validateDatabaseIntegrity(db);
     if (!isValid) {
       throw Exception('Database migration failed validation');
     }
-    
+
     // Cleanup old backups
     await DatabaseMigration.cleanupOldBackups();
   }
@@ -202,7 +202,7 @@ class LocalDatabase {
   static Future<void> _onOpen(Database db) async {
     // Configure performance settings
     await DatabaseOptimizer.configureDatabaseSettings();
-    
+
     // Create optimized indexes
     await DatabaseOptimizer.createOptimizedIndexes();
   }

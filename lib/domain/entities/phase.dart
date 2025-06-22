@@ -24,15 +24,15 @@ class Phase extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        cycleId,
-        phaseType,
-        startDay,
-        endDay,
-        duration,
-        predictions,
-        createdAt,
-      ];
+    id,
+    cycleId,
+    phaseType,
+    startDay,
+    endDay,
+    duration,
+    predictions,
+    createdAt,
+  ];
 
   Phase copyWith({
     String? id,
@@ -58,12 +58,7 @@ class Phase extends Equatable {
 }
 
 /// Enumeration of menstrual cycle phases
-enum PhaseType {
-  menstrual,
-  follicular,
-  ovulation,
-  luteal,
-}
+enum PhaseType { menstrual, follicular, ovulation, luteal }
 
 extension PhaseTypeExtension on PhaseType {
   String get displayName {
@@ -102,7 +97,7 @@ extension PhaseTypeExtension on PhaseType {
           'Bloating',
           'Back pain',
           'Irritability',
-          'Emotional sensitivity'
+          'Emotional sensitivity',
         ];
       case PhaseType.follicular:
         return [
@@ -111,7 +106,7 @@ extension PhaseTypeExtension on PhaseType {
           'Improved sleep',
           'Optimism',
           'Motivation',
-          'Creativity'
+          'Creativity',
         ];
       case PhaseType.ovulation:
         return [
@@ -120,7 +115,7 @@ extension PhaseTypeExtension on PhaseType {
           'Confidence',
           'Assertiveness',
           'High energy',
-          'Social'
+          'Social',
         ];
       case PhaseType.luteal:
         return [
@@ -130,7 +125,7 @@ extension PhaseTypeExtension on PhaseType {
           'Fatigue',
           'Anxiety',
           'Mood swings',
-          'Food cravings'
+          'Food cravings',
         ];
     }
   }
@@ -143,7 +138,7 @@ extension PhaseTypeExtension on PhaseType {
           'Suggest rest periods',
           'Be patient with irritability',
           'Provide heating pads',
-          'Reduce social expectations'
+          'Reduce social expectations',
         ];
       case PhaseType.follicular:
         return [
@@ -151,7 +146,7 @@ extension PhaseTypeExtension on PhaseType {
           'Plan social activities',
           'Support creative endeavors',
           'Schedule important conversations',
-          'Plan physical activities'
+          'Plan physical activities',
         ];
       case PhaseType.ovulation:
         return [
@@ -159,7 +154,7 @@ extension PhaseTypeExtension on PhaseType {
           'Encourage social interactions',
           'Support confident choices',
           'Plan date nights',
-          'Encourage physical activity'
+          'Encourage physical activity',
         ];
       case PhaseType.luteal:
         return [
@@ -167,7 +162,7 @@ extension PhaseTypeExtension on PhaseType {
           'Avoid major decisions',
           'Offer comfort foods',
           'Plan quiet activities',
-          'Provide emotional support'
+          'Provide emotional support',
         ];
     }
   }

@@ -16,10 +16,7 @@ abstract class DailyLogRepository {
   );
 
   /// Get energy level trends
-  Future<List<DailyLog>> getEnergyTrends(
-    String profileId,
-    int daysToAnalyze,
-  );
+  Future<List<DailyLog>> getEnergyTrends(String profileId, int daysToAnalyze);
 
   /// Get mood patterns
   Future<Map<MoodType, int>> getMoodFrequency(

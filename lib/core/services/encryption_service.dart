@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class EncryptionService {
   static EncryptionService? _instance;
   static EncryptionService get instance => _instance ??= EncryptionService._();
-  
+
   EncryptionService._();
 
   late final encrypt.Encrypter _encrypter;
@@ -19,7 +19,7 @@ class EncryptionService {
   /// Initialize the encryption service
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Get or generate encryption key
     String? storedKey = prefs.getString(_keyStorageKey);
     if (storedKey == null) {
@@ -36,10 +36,10 @@ class EncryptionService {
   /// Encrypt a string value
   String encryptString(String value) {
     if (value.isEmpty) return value;
-    
+
     final iv = encrypt.IV.fromSecureRandom(16);
     final encrypted = _encrypter.encrypt(value, iv: iv);
-    
+
     // Combine IV and encrypted data
     final combined = iv.bytes + encrypted.bytes;
     return base64.encode(combined);
@@ -48,15 +48,15 @@ class EncryptionService {
   /// Decrypt a string value
   String decryptString(String encryptedValue) {
     if (encryptedValue.isEmpty) return encryptedValue;
-    
+
     try {
       final combined = base64.decode(encryptedValue);
-      
+
       // Extract IV (first 16 bytes) and encrypted data
       final iv = encrypt.IV(Uint8List.fromList(combined.take(16).toList()));
       final encryptedBytes = Uint8List.fromList(combined.skip(16).toList());
       final encrypted = encrypt.Encrypted(encryptedBytes);
-      
+
       return _encrypter.decrypt(encrypted, iv: iv);
     } catch (e) {
       // If decryption fails, return original value (might be unencrypted legacy data)
@@ -86,14 +86,14 @@ class EncryptionService {
     List<String> sensitiveFields,
   ) {
     final result = Map<String, dynamic>.from(data);
-    
+
     for (final field in sensitiveFields) {
       if (result.containsKey(field) && result[field] != null) {
         final value = result[field].toString();
         result[field] = encryptString(value);
       }
     }
-    
+
     return result;
   }
 
@@ -103,14 +103,14 @@ class EncryptionService {
     List<String> sensitiveFields,
   ) {
     final result = Map<String, dynamic>.from(data);
-    
+
     for (final field in sensitiveFields) {
       if (result.containsKey(field) && result[field] != null) {
         final encryptedValue = result[field].toString();
         result[field] = decryptString(encryptedValue);
       }
     }
-    
+
     return result;
   }
 
@@ -146,7 +146,10 @@ mixin EncryptedModel {
   /// Convert to JSON with encryption
   Map<String, dynamic> toEncryptedJson() {
     final json = toJson();
-    return EncryptionService.instance.encryptSensitiveFields(json, sensitiveFields);
+    return EncryptionService.instance.encryptSensitiveFields(
+      json,
+      sensitiveFields,
+    );
   }
 
   /// Abstract method that concrete models must implement

@@ -23,13 +23,19 @@ class DatabaseHelper {
   };
 
   /// Encrypt sensitive data before storing
-  static Map<String, dynamic> _encryptData(String tableName, Map<String, dynamic> data) {
+  static Map<String, dynamic> _encryptData(
+    String tableName,
+    Map<String, dynamic> data,
+  ) {
     final sensitiveFields = _sensitiveFields[tableName] ?? [];
     return data.withEncryptedFields(sensitiveFields);
   }
 
   /// Decrypt sensitive data after reading
-  static Map<String, dynamic> _decryptData(String tableName, Map<String, dynamic> data) {
+  static Map<String, dynamic> _decryptData(
+    String tableName,
+    Map<String, dynamic> data,
+  ) {
     final sensitiveFields = _sensitiveFields[tableName] ?? [];
     return data.withDecryptedFields(sensitiveFields);
   }
@@ -115,7 +121,9 @@ class DatabaseHelper {
   }
 
   /// Get all cycles for a profile
-  static Future<List<CycleRecordModel>> getCyclesByProfileId(String profileId) async {
+  static Future<List<CycleRecordModel>> getCyclesByProfileId(
+    String profileId,
+  ) async {
     final db = await _database;
     final List<Map<String, dynamic>> maps = await db.query(
       LocalDatabase.cyclesTable,
@@ -147,7 +155,10 @@ class DatabaseHelper {
   }
 
   /// Get recent cycles for predictions
-  static Future<List<CycleRecordModel>> getRecentCycles(String profileId, int count) async {
+  static Future<List<CycleRecordModel>> getRecentCycles(
+    String profileId,
+    int count,
+  ) async {
     final db = await _database;
     final List<Map<String, dynamic>> maps = await db.query(
       LocalDatabase.cyclesTable,
@@ -224,7 +235,11 @@ class DatabaseHelper {
     DateTime date,
   ) async {
     final db = await _database;
-    final String dateStr = DateTime(date.year, date.month, date.day).toIso8601String();
+    final String dateStr = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    ).toIso8601String();
     final List<Map<String, dynamic>> maps = await db.query(
       LocalDatabase.symptomsTable,
       where: 'profile_id = ? AND date LIKE ?',
@@ -265,7 +280,11 @@ class DatabaseHelper {
     DateTime date,
   ) async {
     final db = await _database;
-    final String dateStr = DateTime(date.year, date.month, date.day).toIso8601String();
+    final String dateStr = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    ).toIso8601String();
     final List<Map<String, dynamic>> maps = await db.query(
       LocalDatabase.dailyLogsTable,
       where: 'profile_id = ? AND date = ?',
@@ -352,7 +371,9 @@ class DatabaseHelper {
   // ===== NOTIFICATION OPERATIONS =====
 
   /// Create notification
-  static Future<void> insertNotification(CycleNotificationModel notification) async {
+  static Future<void> insertNotification(
+    CycleNotificationModel notification,
+  ) async {
     final db = await _database;
     await db.insert(
       LocalDatabase.notificationsTable,
@@ -377,7 +398,9 @@ class DatabaseHelper {
   }
 
   /// Get notifications for a profile
-  static Future<List<CycleNotificationModel>> getNotificationsByProfileId(String profileId) async {
+  static Future<List<CycleNotificationModel>> getNotificationsByProfileId(
+    String profileId,
+  ) async {
     final db = await _database;
     final List<Map<String, dynamic>> maps = await db.query(
       LocalDatabase.notificationsTable,
@@ -417,22 +440,38 @@ class DatabaseHelper {
   /// Get database statistics
   static Future<Map<String, int>> getDatabaseStats() async {
     final db = await _database;
-    
-    final profileCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM ${LocalDatabase.profilesTable} WHERE is_active = 1'),
-    ) ?? 0;
-    
-    final cycleCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM ${LocalDatabase.cyclesTable}'),
-    ) ?? 0;
-    
-    final symptomCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM ${LocalDatabase.symptomsTable}'),
-    ) ?? 0;
-    
-    final dailyLogCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM ${LocalDatabase.dailyLogsTable}'),
-    ) ?? 0;
+
+    final profileCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM ${LocalDatabase.profilesTable} WHERE is_active = 1',
+          ),
+        ) ??
+        0;
+
+    final cycleCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM ${LocalDatabase.cyclesTable}',
+          ),
+        ) ??
+        0;
+
+    final symptomCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM ${LocalDatabase.symptomsTable}',
+          ),
+        ) ??
+        0;
+
+    final dailyLogCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM ${LocalDatabase.dailyLogsTable}',
+          ),
+        ) ??
+        0;
 
     return {
       'profiles': profileCount,
@@ -445,7 +484,7 @@ class DatabaseHelper {
   /// Clear all data for a profile
   static Future<void> clearProfileData(String profileId) async {
     final db = await _database;
-    
+
     await db.transaction((txn) async {
       // Delete daily logs
       await txn.delete(
@@ -453,30 +492,33 @@ class DatabaseHelper {
         where: 'profile_id = ?',
         whereArgs: [profileId],
       );
-      
+
       // Delete symptoms
       await txn.delete(
         LocalDatabase.symptomsTable,
         where: 'profile_id = ?',
         whereArgs: [profileId],
       );
-      
+
       // Delete notifications
       await txn.delete(
         LocalDatabase.notificationsTable,
         where: 'profile_id = ?',
         whereArgs: [profileId],
       );
-      
+
       // Delete phases for cycles
-      await txn.rawDelete('''
+      await txn.rawDelete(
+        '''
         DELETE FROM ${LocalDatabase.phasesTable} 
         WHERE cycle_id IN (
           SELECT id FROM ${LocalDatabase.cyclesTable} 
           WHERE profile_id = ?
         )
-      ''', [profileId]);
-      
+      ''',
+        [profileId],
+      );
+
       // Delete cycles
       await txn.delete(
         LocalDatabase.cyclesTable,

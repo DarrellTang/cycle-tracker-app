@@ -13,9 +13,9 @@ abstract class NotificationRepository {
 
   /// Get notifications by type
   Future<List<CycleNotification>> getNotificationsByType(
-    NotificationType type,
-    {String? profileId}
-  );
+    NotificationType type, {
+    String? profileId,
+  });
 
   /// Mark notification as sent
   Future<void> markNotificationAsSent(String notificationId);

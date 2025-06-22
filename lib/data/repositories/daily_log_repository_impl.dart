@@ -41,15 +41,17 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
   ) async {
     final endDate = DateTime.now();
     final startDate = endDate.subtract(Duration(days: daysToAnalyze));
-    
+
     final dailyLogs = await DatabaseHelper.getDailyLogsByDateRange(
       profileId,
       startDate,
       endDate,
     );
-    
+
     // Filter logs that have energy level data
-    final energyLogs = dailyLogs.where((log) => log.energyLevel != null).toList();
+    final energyLogs = dailyLogs
+        .where((log) => log.energyLevel != null)
+        .toList();
     return energyLogs.map((log) => log.toEntity()).toList();
   }
 
@@ -64,14 +66,14 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
       startDate,
       endDate,
     );
-    
+
     final moodCounts = <MoodType, int>{};
     for (final log in dailyLogs) {
       if (log.mood != null) {
         moodCounts[log.mood!] = (moodCounts[log.mood!] ?? 0) + 1;
       }
     }
-    
+
     return moodCounts;
   }
 
@@ -84,13 +86,13 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
     // For now, return recent logs as a placeholder
     final endDate = DateTime.now();
     final startDate = endDate.subtract(const Duration(days: 7));
-    
+
     final dailyLogs = await DatabaseHelper.getDailyLogsByDateRange(
       profileId,
       startDate,
       endDate,
     );
-    
+
     return dailyLogs.map((log) => log.toEntity()).toList();
   }
 
@@ -108,15 +110,15 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
     // For now, return a simplified analysis
     final endDate = DateTime.now();
     final startDate = endDate.subtract(Duration(days: cyclesToAnalyze * 35));
-    
+
     final dailyLogs = await DatabaseHelper.getDailyLogsByDateRange(
       profileId,
       startDate,
       endDate,
     );
-    
+
     final energyData = <int, List<int>>{};
-    
+
     // Group by day of month as a simplified cycle day approximation
     for (final log in dailyLogs) {
       if (log.energyLevel != null) {
@@ -125,14 +127,15 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
         energyData[cycleDay]!.add(log.energyLevel!);
       }
     }
-    
+
     // Calculate averages
     final averages = <int, double>{};
     energyData.forEach((day, energyLevels) {
-      final average = energyLevels.reduce((a, b) => a + b) / energyLevels.length;
+      final average =
+          energyLevels.reduce((a, b) => a + b) / energyLevels.length;
       averages[day] = average;
     });
-    
+
     return averages;
   }
 
@@ -143,15 +146,17 @@ class DailyLogRepositoryImpl implements DailyLogRepository {
   ) async {
     final endDate = DateTime.now();
     final startDate = endDate.subtract(Duration(days: daysToAnalyze));
-    
+
     final dailyLogs = await DatabaseHelper.getDailyLogsByDateRange(
       profileId,
       startDate,
       endDate,
     );
-    
+
     // Filter logs that have sleep quality data
-    final sleepLogs = dailyLogs.where((log) => log.sleepQuality != null).toList();
+    final sleepLogs = dailyLogs
+        .where((log) => log.sleepQuality != null)
+        .toList();
     return sleepLogs.map((log) => log.toEntity()).toList();
   }
 }

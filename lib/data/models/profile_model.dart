@@ -49,10 +49,12 @@ class ProfileModel extends Profile {
       defaultCycleLength: json['default_cycle_length'] as int? ?? 28,
       defaultPeriodLength: json['default_period_length'] as int? ?? 5,
       trackingPreferences: json['tracking_preferences'] != null
-          ? jsonDecode(json['tracking_preferences'] as String) as Map<String, dynamic>
+          ? jsonDecode(json['tracking_preferences'] as String)
+                as Map<String, dynamic>
           : null,
       privacySettings: json['privacy_settings'] != null
-          ? jsonDecode(json['privacy_settings'] as String) as Map<String, dynamic>
+          ? jsonDecode(json['privacy_settings'] as String)
+                as Map<String, dynamic>
           : null,
       isActive: (json['is_active'] as int?) == 1,
       createdAt: DateTime.parse(json['created_at'] as String),

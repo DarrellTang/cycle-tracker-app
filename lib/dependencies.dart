@@ -18,6 +18,10 @@ export 'package:dio/dio.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:sqflite/sqflite.dart';
 
+// Encryption
+export 'package:encrypt/encrypt.dart' hide Key;
+export 'package:crypto/crypto.dart';
+
 // Calendar and Date Utils
 export 'package:table_calendar/table_calendar.dart';
 export 'package:intl/intl.dart' hide TextDirection;

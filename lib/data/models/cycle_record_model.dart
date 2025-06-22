@@ -10,6 +10,9 @@ class CycleRecordModel extends CycleRecord {
     super.cycleLength,
     super.periodLength,
     required super.currentPhase,
+    super.notes,
+    super.isPredicted = false,
+    super.flowIntensity,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -24,6 +27,9 @@ class CycleRecordModel extends CycleRecord {
       cycleLength: cycle.cycleLength,
       periodLength: cycle.periodLength,
       currentPhase: cycle.currentPhase,
+      notes: cycle.notes,
+      isPredicted: cycle.isPredicted,
+      flowIntensity: cycle.flowIntensity,
       createdAt: cycle.createdAt,
       updatedAt: cycle.updatedAt,
     );
@@ -44,6 +50,9 @@ class CycleRecordModel extends CycleRecord {
         (phase) => phase.name == json['current_phase'] as String,
         orElse: () => CyclePhase.menstrual,
       ),
+      notes: json['notes'] as String?,
+      isPredicted: (json['is_predicted'] as int?) == 1,
+      flowIntensity: json['flow_intensity'] as int?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -59,6 +68,9 @@ class CycleRecordModel extends CycleRecord {
       'cycle_length': cycleLength,
       'period_length': periodLength,
       'current_phase': currentPhase.name,
+      'notes': notes,
+      'is_predicted': isPredicted ? 1 : 0,
+      'flow_intensity': flowIntensity,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -74,6 +86,9 @@ class CycleRecordModel extends CycleRecord {
       cycleLength: cycleLength,
       periodLength: periodLength,
       currentPhase: currentPhase,
+      notes: notes,
+      isPredicted: isPredicted,
+      flowIntensity: flowIntensity,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -89,6 +104,9 @@ class CycleRecordModel extends CycleRecord {
     int? cycleLength,
     int? periodLength,
     CyclePhase? currentPhase,
+    String? notes,
+    bool? isPredicted,
+    int? flowIntensity,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -100,6 +118,9 @@ class CycleRecordModel extends CycleRecord {
       cycleLength: cycleLength ?? this.cycleLength,
       periodLength: periodLength ?? this.periodLength,
       currentPhase: currentPhase ?? this.currentPhase,
+      notes: notes ?? this.notes,
+      isPredicted: isPredicted ?? this.isPredicted,
+      flowIntensity: flowIntensity ?? this.flowIntensity,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

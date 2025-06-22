@@ -9,6 +9,9 @@ class CycleRecord extends Equatable {
   final int? cycleLength;
   final int? periodLength;
   final CyclePhase currentPhase;
+  final String? notes;
+  final bool isPredicted;
+  final int? flowIntensity;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -20,6 +23,9 @@ class CycleRecord extends Equatable {
     this.cycleLength,
     this.periodLength,
     required this.currentPhase,
+    this.notes,
+    this.isPredicted = false,
+    this.flowIntensity,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -33,6 +39,9 @@ class CycleRecord extends Equatable {
     int? cycleLength,
     int? periodLength,
     CyclePhase? currentPhase,
+    String? notes,
+    bool? isPredicted,
+    int? flowIntensity,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -44,6 +53,9 @@ class CycleRecord extends Equatable {
       cycleLength: cycleLength ?? this.cycleLength,
       periodLength: periodLength ?? this.periodLength,
       currentPhase: currentPhase ?? this.currentPhase,
+      notes: notes ?? this.notes,
+      isPredicted: isPredicted ?? this.isPredicted,
+      flowIntensity: flowIntensity ?? this.flowIntensity,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -58,6 +70,9 @@ class CycleRecord extends Equatable {
     cycleLength,
     periodLength,
     currentPhase,
+    notes,
+    isPredicted,
+    flowIntensity,
     createdAt,
     updatedAt,
   ];

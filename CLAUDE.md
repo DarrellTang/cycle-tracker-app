@@ -132,13 +132,15 @@ This project follows a strict branch-and-PR workflow for all development tasks:
 1. **Create Feature Branch**: Create new branch from main for the specific subtask
 2. **Implement**: Complete the subtask implementation
 3. **Test**: Run all quality checks (`flutter analyze`, `flutter test`)
-4. **Self-Verify**: Ensure subtask requirements are fully met
-5. **Create PR**: Open pull request to merge into main
-6. **User Review**: Wait for manual confirmation from user
-7. **Merge**: Only merge after explicit user approval
-8. **Next Subtask**: Move to next subtask only after previous is merged
+4. **Format**: Run `dart format .` to ensure consistent code formatting
+5. **Self-Verify**: Ensure subtask requirements are fully met
+6. **Create PR**: Open pull request to merge into main
+7. **User Review**: Wait for manual confirmation from user
+8. **Merge**: Only merge after explicit user approval
+9. **Next Subtask**: Move to next subtask only after previous is merged
 
 ### Quality Gates Before PR Creation
+- `dart format .` applied to ensure consistent formatting
 - `flutter analyze` passes with no issues
 - `flutter test` passes (once tests exist)
 - App builds and runs successfully

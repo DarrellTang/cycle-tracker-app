@@ -2,7 +2,9 @@ import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/core/constants/app_constants.dart';
 import 'package:cycle_tracker_app/core/router.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const ProviderScope(child: CycleTrackerApp()));
 }
 

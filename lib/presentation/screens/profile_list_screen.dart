@@ -14,7 +14,6 @@ class ProfileListScreen extends StatefulWidget {
 class _ProfileListScreenState extends State<ProfileListScreen> {
   final ProfileService _profileService = ProfileService();
   List<Profile> _profiles = [];
-  String? _activeProfileId;
   bool _isLoading = true;
 
   @override
@@ -27,11 +26,9 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
     setState(() => _isLoading = true);
     try {
       final profiles = await _profileService.getAllProfiles();
-      final activeProfile = await _profileService.getActiveProfile();
 
       setState(() {
         _profiles = profiles;
-        _activeProfileId = activeProfile?.id;
         _isLoading = false;
       });
     } catch (e) {
@@ -44,23 +41,6 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
     }
   }
 
-  Future<void> _setActiveProfile(String profileId) async {
-    try {
-      await _profileService.setActiveProfile(profileId);
-      setState(() => _activeProfileId = profileId);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Profile activated')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error activating profile: $e')));
-      }
-    }
-  }
 
   Future<void> _deleteProfile(Profile profile) async {
     // Show confirmation dialog
@@ -120,7 +100,6 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
   }
 
   Widget _buildProfileCard(Profile profile) {
-    final isActive = profile.id == _activeProfileId;
     final profileColor = profile.colorCode != null
         ? Color(int.parse(profile.colorCode!.replaceFirst('#', '0xFF')))
         : Colors.blue;
@@ -146,8 +125,8 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
         ),
         title: Text(
           profile.name,
-          style: TextStyle(
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          style: const TextStyle(
+            fontWeight: FontWeight.normal,
           ),
         ),
         subtitle: Column(
@@ -164,59 +143,41 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
             ),
           ],
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isActive)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Active',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            else
-              TextButton(
-                onPressed: () => _setActiveProfile(profile.id),
-                child: const Text('Activate'),
+        onTap: () {
+          // Navigate to cycle details for this profile
+          Navigator.pushNamed(
+            context,
+            '/cycle-details',
+            arguments: profile,
+          );
+        },
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) {
+            switch (value) {
+              case 'edit':
+                _navigateToEditProfile(profile);
+                break;
+              case 'delete':
+                _deleteProfile(profile);
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => [
+            const PopupMenuItem(
+              value: 'edit',
+              child: ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Edit'),
+                contentPadding: EdgeInsets.zero,
               ),
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                switch (value) {
-                  case 'edit':
-                    _navigateToEditProfile(profile);
-                    break;
-                  case 'delete':
-                    _deleteProfile(profile);
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: ListTile(
-                    leading: Icon(Icons.edit),
-                    title: Text('Edit'),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: ListTile(
-                    leading: Icon(Icons.delete, color: Colors.red),
-                    title: Text('Delete', style: TextStyle(color: Colors.red)),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
+            ),
+            const PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text('Delete', style: TextStyle(color: Colors.red)),
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ],
         ),

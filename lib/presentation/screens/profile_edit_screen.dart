@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cycle_tracker_app/domain/entities/profile.dart';
@@ -159,6 +160,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fix the errors in the form'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -168,7 +175,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       final colorCode = _colorToHex(_selectedColor);
 
       if (_isEditing) {
-        // Update existing profile
+        // Update existing profile with timeout
         final updatedProfile = widget.profile!.copyWith(
           name: _nameController.text.trim(),
           birthDate: _birthDate,
@@ -179,7 +186,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           updatedAt: DateTime.now(),
         );
 
-        await _profileService.updateProfile(updatedProfile);
+        await _profileService.updateProfile(updatedProfile).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Profile update timed out'),
+        );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -187,7 +197,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           );
         }
       } else {
-        // Create new profile
+        // Create new profile with timeout
         await _profileService.createProfile(
           name: _nameController.text.trim(),
           birthDate: _birthDate,
@@ -195,6 +205,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           colorCode: colorCode,
           defaultCycleLength: int.parse(_cycleLengthController.text),
           defaultPeriodLength: int.parse(_periodLengthController.text),
+        ).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Profile creation timed out - database may not be ready'),
         );
 
         if (mounted) {
@@ -208,10 +221,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         Navigator.pop(context, true);
       }
     } catch (e) {
+      dev.log('Profile save error: $e', name: 'ProfileEditScreen');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error saving profile: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving profile: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -226,9 +244,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   String _colorToHex(Color color) {
     // Use non-deprecated RGB component accessors
-    final r = ((color.r * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
-    final g = ((color.g * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
-    final b = ((color.b * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
+    final r = ((color.r * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
+    final g = ((color.g * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
+    final b = ((color.b * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
     return '#$r$g$b';
   }
 

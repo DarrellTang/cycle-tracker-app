@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/core/services/encryption_service.dart';
 import 'package:cycle_tracker_app/data/datasources/database_migration.dart';
 import 'package:cycle_tracker_app/data/datasources/database_optimizer.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Local SQLite database for storing cycle tracking data
 class LocalDatabase {
   static Database? _database;
+  static bool _factoryInitialized = false;
   static const String _databaseName = 'cycle_tracker.db';
   static const int _databaseVersion = DatabaseMigration.currentVersion;
 
@@ -20,6 +24,19 @@ class LocalDatabase {
   /// Get the database instance (singleton)
   static Future<Database> get database async {
     if (_database == null) {
+      // Initialize database factory only once
+      if (!_factoryInitialized) {
+        if (kIsWeb) {
+          // Use web implementation - ensure proper setup
+          databaseFactory = databaseFactoryFfiWeb;
+        } else {
+          // Use ffi on desktop platforms (Linux, Windows, macOS)
+          sqfliteFfiInit();
+          databaseFactory = databaseFactoryFfi;
+        }
+        _factoryInitialized = true;
+      }
+      
       // Initialize encryption service first
       await EncryptionService.instance.initialize();
       _database = await _initDatabase();
@@ -29,8 +46,15 @@ class LocalDatabase {
 
   /// Initialize the database
   static Future<Database> _initDatabase() async {
-    final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, _databaseName);
+    String path;
+    if (kIsWeb) {
+      // Use simple name for web and clear any existing corrupted db
+      path = 'cycle_tracker_clean.db';
+    } else {
+      // Use full path for mobile/desktop
+      final databasesPath = await getDatabasesPath();
+      path = join(databasesPath, _databaseName);
+    }
 
     final database = await openDatabase(
       path,

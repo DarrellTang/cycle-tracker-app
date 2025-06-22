@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/core/router.dart';
 import 'package:cycle_tracker_app/core/services/profile_service.dart';
@@ -14,7 +15,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final ProfileService _profileService = ProfileService();
   List<Profile> _profiles = [];
-  Profile? _activeProfile;
   bool _isLoading = true;
 
   @override
@@ -25,17 +25,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _loadProfiles() async {
     setState(() => _isLoading = true);
+    
     try {
       final profiles = await _profileService.getAllProfiles();
-      final activeProfile = await _profileService.getActiveProfile();
 
-      setState(() {
-        _profiles = profiles;
-        _activeProfile = activeProfile;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _profiles = profiles;
+          _isLoading = false;
+        });
+        
+        // Show web storage notice once
+        if (kIsWeb && _profiles.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Web version: Data stored temporarily in browser session'),
+              backgroundColor: Colors.blue,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _profiles = [];
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Storage error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -65,8 +90,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: () =>
-                    Navigator.pushNamed(context, Routes.profileCreate),
+                onPressed: () async {
+                  final result = await Navigator.pushNamed(context, Routes.profileCreate);
+                  if (result == true) {
+                    _loadProfiles(); // Refresh the profile list
+                  }
+                },
                 icon: const Icon(Icons.add),
                 label: const Text('Create First Profile'),
               ),
@@ -78,62 +107,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Column(
       children: [
-        // Active profile display
-        if (_activeProfile != null)
-          Card(
-            margin: const EdgeInsets.all(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: _activeProfile!.colorCode != null
-                            ? Color(
-                                int.parse(
-                                  _activeProfile!.colorCode!.replaceFirst(
-                                    '#',
-                                    '0xFF',
-                                  ),
-                                ),
-                              )
-                            : Colors.blue,
-                        child: Text(
-                          _activeProfile!.name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Currently tracking: ${_activeProfile!.name}',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Cycle length: ${_activeProfile!.defaultCycleLength} days',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Cycle tracking features coming soon...'),
-                ],
-              ),
-            ),
-          ),
-
         // Profile management section
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -147,7 +120,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               TextButton(
-                onPressed: () => Navigator.pushNamed(context, Routes.profile),
+                onPressed: () async {
+                  await Navigator.pushNamed(context, Routes.profile);
+                  _loadProfiles(); // Refresh after returning from profile management
+                },
                 child: const Text('Manage All'),
               ),
             ],
@@ -163,7 +139,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemCount: _profiles.length,
             itemBuilder: (context, index) {
               final profile = _profiles[index];
-              final isActive = profile.id == _activeProfile?.id;
               final profileColor = profile.colorCode != null
                   ? Color(
                       int.parse(profile.colorCode!.replaceFirst('#', '0xFF')),
@@ -175,65 +150,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 margin: const EdgeInsets.only(right: 12),
                 child: Card(
                   child: InkWell(
-                    onTap: isActive
-                        ? null
-                        : () async {
-                            final messenger = ScaffoldMessenger.of(context);
-                            await _profileService.setActiveProfile(profile.id);
-                            _loadProfiles();
-                            if (mounted) {
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  content: Text('Switched to ${profile.name}'),
-                                ),
-                              );
-                            }
-                          },
+                    onTap: () {
+                      // Navigate to cycle details for this profile
+                      Navigator.pushNamed(
+                        context, 
+                        Routes.cycleDetails,
+                        arguments: profile,
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Stack(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: profileColor,
-                                child: Text(
-                                  profile.name[0].toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                          CircleAvatar(
+                            backgroundColor: profileColor,
+                            child: Text(
+                              profile.name[0].toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                              if (isActive)
-                                Positioned(
-                                  right: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.green,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      size: 12,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             profile.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
-                              fontWeight: isActive
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                              fontWeight: FontWeight.normal,
                             ),
                             textAlign: TextAlign.center,
                             maxLines: 2,
@@ -260,7 +205,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, Routes.profile),
+            onPressed: () async {
+              await Navigator.pushNamed(context, Routes.profile);
+              _loadProfiles(); // Refresh after returning from profile management
+            },
             icon: const Icon(Icons.people),
             tooltip: 'Manage Profiles',
           ),
@@ -296,10 +244,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             runSpacing: 16,
                             children: [
                               ElevatedButton(
-                                onPressed: () => Navigator.pushNamed(
-                                  context,
-                                  Routes.profile,
-                                ),
+                                onPressed: () async {
+                                  await Navigator.pushNamed(context, Routes.profile);
+                                  _loadProfiles(); // Refresh after returning from profile management
+                                },
                                 child: const Text('Manage Profiles'),
                               ),
                               ElevatedButton(
@@ -326,7 +274,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, Routes.profileCreate),
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, Routes.profileCreate);
+          if (result == true) {
+            _loadProfiles(); // Refresh the profile list
+          }
+        },
         tooltip: 'Add Profile',
         child: const Icon(Icons.add),
       ),

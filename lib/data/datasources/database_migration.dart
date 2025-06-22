@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/core/services/encryption_service.dart';
@@ -26,7 +27,10 @@ class DatabaseMigration {
     int oldVersion,
     int newVersion,
   ) async {
-    print('Migrating database from version $oldVersion to $newVersion');
+    dev.log(
+      'Migrating database from version $oldVersion to $newVersion',
+      name: 'DatabaseMigration',
+    );
 
     await db.transaction((txn) async {
       for (int version = oldVersion + 1; version <= newVersion; version++) {
@@ -34,7 +38,10 @@ class DatabaseMigration {
       }
     });
 
-    print('Database migration completed successfully');
+    dev.log(
+      'Database migration completed successfully',
+      name: 'DatabaseMigration',
+    );
   }
 
   /// Execute migration for a specific version
@@ -42,7 +49,10 @@ class DatabaseMigration {
     Transaction txn,
     int version,
   ) async {
-    print('Executing migration for version $version');
+    dev.log(
+      'Executing migration for version $version',
+      name: 'DatabaseMigration',
+    );
 
     switch (version) {
       case 1:
@@ -59,7 +69,10 @@ class DatabaseMigration {
 
       // Add more version migrations here as needed
       default:
-        print('No migration defined for version $version');
+        dev.log(
+          'No migration defined for version $version',
+          name: 'DatabaseMigration',
+        );
     }
   }
 
@@ -79,7 +92,7 @@ class DatabaseMigration {
       CREATE INDEX idx_profiles_timezone ON profiles (timezone)
     ''');
 
-    print('Migration to version 2 completed');
+    dev.log('Migration to version 2 completed', name: 'DatabaseMigration');
   }
 
   /// Example migration to version 3 (for future use)
@@ -102,7 +115,7 @@ class DatabaseMigration {
       CREATE INDEX idx_preferences_profile ON user_preferences (profile_id)
     ''');
 
-    print('Migration to version 3 completed');
+    dev.log('Migration to version 3 completed', name: 'DatabaseMigration');
   }
 
   /// Backup database before major migrations
@@ -119,10 +132,16 @@ class DatabaseMigration {
       final dbFile = await File(dbPath).readAsBytes();
       await File(backupPath).writeAsBytes(dbFile);
 
-      print('Database backup created at: $backupPath');
+      dev.log(
+        'Database backup created at: $backupPath',
+        name: 'DatabaseMigration',
+      );
       return backupPath;
     } catch (e) {
-      print('Failed to create database backup: $e');
+      dev.log(
+        'Failed to create database backup: $e',
+        name: 'DatabaseMigration',
+      );
       return null;
     }
   }
@@ -137,10 +156,16 @@ class DatabaseMigration {
       final backupFile = await File(backupPath).readAsBytes();
       await File(dbPath).writeAsBytes(backupFile);
 
-      print('Database restored from backup: $backupPath');
+      dev.log(
+        'Database restored from backup: $backupPath',
+        name: 'DatabaseMigration',
+      );
       return true;
     } catch (e) {
-      print('Failed to restore database from backup: $e');
+      dev.log(
+        'Failed to restore database from backup: $e',
+        name: 'DatabaseMigration',
+      );
       return false;
     }
   }
@@ -166,7 +191,10 @@ class DatabaseMigration {
 
       for (final expectedTable in expectedTables) {
         if (!existingTableNames.contains(expectedTable)) {
-          print('Missing expected table: $expectedTable');
+          dev.log(
+            'Missing expected table: $expectedTable',
+            name: 'DatabaseMigration',
+          );
           return false;
         }
       }
@@ -177,23 +205,30 @@ class DatabaseMigration {
       // Check database version
       final version = await db.getVersion();
       if (version != currentVersion) {
-        print(
+        dev.log(
           'Database version mismatch. Expected: $currentVersion, Found: $version',
+          name: 'DatabaseMigration',
         );
         return false;
       }
 
-      print('Database integrity validation passed');
+      dev.log(
+        'Database integrity validation passed',
+        name: 'DatabaseMigration',
+      );
       return true;
     } catch (e) {
-      print('Database integrity validation failed: $e');
+      dev.log(
+        'Database integrity validation failed: $e',
+        name: 'DatabaseMigration',
+      );
       return false;
     }
   }
 
   /// Migrate encrypted data when encryption keys change
   static Future<void> migrateEncryptedData(Database db) async {
-    print('Starting encrypted data migration');
+    dev.log('Starting encrypted data migration', name: 'DatabaseMigration');
 
     try {
       await db.transaction((txn) async {
@@ -211,9 +246,9 @@ class DatabaseMigration {
         }
       });
 
-      print('Encrypted data migration completed');
+      dev.log('Encrypted data migration completed', name: 'DatabaseMigration');
     } catch (e) {
-      print('Encrypted data migration failed: $e');
+      dev.log('Encrypted data migration failed: $e', name: 'DatabaseMigration');
       rethrow;
     }
   }
@@ -249,7 +284,10 @@ class DatabaseMigration {
             reencryptedData[field] = reencrypted;
           } catch (e) {
             // If decryption fails, data might already be in new format
-            print('Skipping re-encryption for $tableName.$field: $e');
+            dev.log(
+              'Skipping re-encryption for $tableName.$field: $e',
+              name: 'DatabaseMigration',
+            );
           }
         }
       }
@@ -299,11 +337,14 @@ class DatabaseMigration {
       if (backupFiles.length > 5) {
         for (int i = 5; i < backupFiles.length; i++) {
           await backupFiles[i].delete();
-          print('Deleted old backup: ${backupFiles[i].path}');
+          dev.log(
+            'Deleted old backup: ${backupFiles[i].path}',
+            name: 'DatabaseMigration',
+          );
         }
       }
     } catch (e) {
-      print('Failed to cleanup old backups: $e');
+      dev.log('Failed to cleanup old backups: $e', name: 'DatabaseMigration');
     }
   }
 
@@ -355,7 +396,7 @@ class DatabaseMigration {
 
       return exportData;
     } catch (e) {
-      print('Failed to export database data: $e');
+      dev.log('Failed to export database data: $e', name: 'DatabaseMigration');
       return null;
     }
   }
@@ -405,10 +446,13 @@ class DatabaseMigration {
         }
       });
 
-      print('Database import completed successfully');
+      dev.log(
+        'Database import completed successfully',
+        name: 'DatabaseMigration',
+      );
       return true;
     } catch (e) {
-      print('Failed to import database data: $e');
+      dev.log('Failed to import database data: $e', name: 'DatabaseMigration');
       return false;
     }
   }

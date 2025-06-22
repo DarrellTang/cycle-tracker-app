@@ -1,4 +1,3 @@
-import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/domain/entities/profile.dart';
 import 'package:cycle_tracker_app/domain/repositories/profile_repository.dart';
 import 'package:cycle_tracker_app/data/models/profile_model.dart';

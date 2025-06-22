@@ -100,7 +100,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final ovulationEnd = cycleStartDate.add(
       Duration(days: (cycleLength * 0.6).round()),
     );
-    final lutealEnd = cycleStartDate.add(Duration(days: cycleLength));
+    // lutealEnd would be used for luteal phase end notifications if needed
+    // final lutealEnd = cycleStartDate.add(Duration(days: cycleLength));
 
     // Phase transition notifications
     final phaseNotifications = [

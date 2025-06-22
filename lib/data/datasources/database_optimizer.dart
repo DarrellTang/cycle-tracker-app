@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'package:cycle_tracker_app/dependencies.dart';
 import 'package:cycle_tracker_app/data/datasources/local_database.dart';
 
@@ -30,7 +31,10 @@ class DatabaseOptimizer {
 
       return analysis;
     } catch (e) {
-      print('Failed to analyze query performance: $e');
+      dev.log(
+        'Failed to analyze query performance: $e',
+        name: 'DatabaseOptimizer',
+      );
       return {'error': e.toString()};
     }
   }
@@ -205,9 +209,15 @@ class DatabaseOptimizer {
         ''');
       });
 
-      print('Optimized indexes created successfully');
+      dev.log(
+        'Optimized indexes created successfully',
+        name: 'DatabaseOptimizer',
+      );
     } catch (e) {
-      print('Failed to create optimized indexes: $e');
+      dev.log(
+        'Failed to create optimized indexes: $e',
+        name: 'DatabaseOptimizer',
+      );
     }
   }
 
@@ -225,9 +235,9 @@ class DatabaseOptimizer {
       // Enable query planner optimizations
       await db.execute('PRAGMA optimize');
 
-      print('Database optimization completed');
+      dev.log('Database optimization completed', name: 'DatabaseOptimizer');
     } catch (e) {
-      print('Failed to optimize database: $e');
+      dev.log('Failed to optimize database: $e', name: 'DatabaseOptimizer');
     }
   }
 
@@ -324,10 +334,10 @@ class DatabaseOptimizer {
         // Don't archive cycles and phases as they're needed for predictions
       });
 
-      print('Archived $totalArchived old records');
+      dev.log('Archived $totalArchived old records', name: 'DatabaseOptimizer');
       return totalArchived;
     } catch (e) {
-      print('Failed to archive old data: $e');
+      dev.log('Failed to archive old data: $e', name: 'DatabaseOptimizer');
       return 0;
     }
   }
@@ -355,9 +365,15 @@ class DatabaseOptimizer {
       // Enable mmap for better read performance
       await db.execute('PRAGMA mmap_size = 67108864'); // 64MB
 
-      print('Database performance settings configured');
+      dev.log(
+        'Database performance settings configured',
+        name: 'DatabaseOptimizer',
+      );
     } catch (e) {
-      print('Failed to configure database settings: $e');
+      dev.log(
+        'Failed to configure database settings: $e',
+        name: 'DatabaseOptimizer',
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:cycle_tracker_app/dependencies.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cycle_tracker_app/core/router.dart';
 import 'package:cycle_tracker_app/core/services/profile_service.dart';
 import 'package:cycle_tracker_app/domain/entities/profile.dart';

@@ -186,10 +186,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           updatedAt: DateTime.now(),
         );
 
-        await _profileService.updateProfile(updatedProfile).timeout(
-          const Duration(seconds: 10),
-          onTimeout: () => throw Exception('Profile update timed out'),
-        );
+        await _profileService
+            .updateProfile(updatedProfile)
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () => throw Exception('Profile update timed out'),
+            );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -198,17 +200,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         }
       } else {
         // Create new profile with timeout
-        await _profileService.createProfile(
-          name: _nameController.text.trim(),
-          birthDate: _birthDate,
-          photoPath: _photoPath,
-          colorCode: colorCode,
-          defaultCycleLength: int.parse(_cycleLengthController.text),
-          defaultPeriodLength: int.parse(_periodLengthController.text),
-        ).timeout(
-          const Duration(seconds: 10),
-          onTimeout: () => throw Exception('Profile creation timed out - database may not be ready'),
-        );
+        await _profileService
+            .createProfile(
+              name: _nameController.text.trim(),
+              birthDate: _birthDate,
+              photoPath: _photoPath,
+              colorCode: colorCode,
+              defaultCycleLength: int.parse(_cycleLengthController.text),
+              defaultPeriodLength: int.parse(_periodLengthController.text),
+            )
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () => throw Exception(
+                'Profile creation timed out - database may not be ready',
+              ),
+            );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

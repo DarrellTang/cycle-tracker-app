@@ -36,7 +36,7 @@ class LocalDatabase {
         }
         _factoryInitialized = true;
       }
-      
+
       // Initialize encryption service first
       await EncryptionService.instance.initialize();
       _database = await _initDatabase();

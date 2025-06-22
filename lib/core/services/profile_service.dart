@@ -10,31 +10,46 @@ import 'package:cycle_tracker_app/data/repositories/profile_repository_memory.da
 class ProfileService {
   late final ProfileRepository _profileRepository;
   final Uuid _uuid = const Uuid();
-  
+
   ProfileService() {
     // Use memory storage for web until SQLite issues are resolved
     if (kIsWeb) {
       _profileRepository = ProfileRepositoryMemory();
-      dev.log('Using in-memory profile storage for web', name: 'ProfileService');
+      dev.log(
+        'Using in-memory profile storage for web',
+        name: 'ProfileService',
+      );
     } else {
       _profileRepository = ProfileRepositoryImpl();
-      dev.log('Using SQLite profile storage for mobile', name: 'ProfileService');
+      dev.log(
+        'Using SQLite profile storage for mobile',
+        name: 'ProfileService',
+      );
     }
   }
 
   /// Get all profiles
   Future<List<Profile>> getAllProfiles() async {
     try {
-      dev.log('ProfileService: Getting all profiles...', name: 'ProfileService');
+      dev.log(
+        'ProfileService: Getting all profiles...',
+        name: 'ProfileService',
+      );
       final profiles = await _profileRepository.getAllProfiles();
-      dev.log('ProfileService: Retrieved ${profiles.length} profiles', name: 'ProfileService');
+      dev.log(
+        'ProfileService: Retrieved ${profiles.length} profiles',
+        name: 'ProfileService',
+      );
       return profiles;
     } catch (e) {
-      dev.log('Failed to get all profiles: $e', name: 'ProfileService', error: e);
+      dev.log(
+        'Failed to get all profiles: $e',
+        name: 'ProfileService',
+        error: e,
+      );
       rethrow;
     }
   }
-
 
   /// Get profile by ID
   Future<Profile?> getProfileById(String id) async {
@@ -117,7 +132,6 @@ class ProfileService {
     }
   }
 
-
   /// Search profiles by name
   Future<List<Profile>> searchProfiles(String query) async {
     try {
@@ -127,7 +141,6 @@ class ProfileService {
       return [];
     }
   }
-
 
   /// Get profile count
   Future<int> getProfileCount() async {
@@ -190,5 +203,4 @@ class ProfileService {
       return [];
     }
   }
-
 }

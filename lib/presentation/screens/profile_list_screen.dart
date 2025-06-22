@@ -41,7 +41,6 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
     }
   }
 
-
   Future<void> _deleteProfile(Profile profile) async {
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
@@ -125,9 +124,7 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
         ),
         title: Text(
           profile.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.normal,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.normal),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,11 +142,7 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
         ),
         onTap: () {
           // Navigate to cycle details for this profile
-          Navigator.pushNamed(
-            context,
-            '/cycle-details',
-            arguments: profile,
-          );
+          Navigator.pushNamed(context, '/cycle-details', arguments: profile);
         },
         trailing: PopupMenuButton<String>(
           onSelected: (value) {

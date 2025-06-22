@@ -25,7 +25,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _loadProfiles() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final profiles = await _profileService.getAllProfiles();
 
@@ -34,12 +34,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _profiles = profiles;
           _isLoading = false;
         });
-        
+
         // Show web storage notice once
         if (kIsWeb && _profiles.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Web version: Data stored temporarily in browser session'),
+              content: Text(
+                'Web version: Data stored temporarily in browser session',
+              ),
               backgroundColor: Colors.blue,
               duration: Duration(seconds: 4),
             ),
@@ -52,7 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _profiles = [];
           _isLoading = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Storage error: ${e.toString()}'),
@@ -91,7 +93,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: () async {
-                  final result = await Navigator.pushNamed(context, Routes.profileCreate);
+                  final result = await Navigator.pushNamed(
+                    context,
+                    Routes.profileCreate,
+                  );
                   if (result == true) {
                     _loadProfiles(); // Refresh the profile list
                   }
@@ -153,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onTap: () {
                       // Navigate to cycle details for this profile
                       Navigator.pushNamed(
-                        context, 
+                        context,
                         Routes.cycleDetails,
                         arguments: profile,
                       );
@@ -245,7 +250,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               ElevatedButton(
                                 onPressed: () async {
-                                  await Navigator.pushNamed(context, Routes.profile);
+                                  await Navigator.pushNamed(
+                                    context,
+                                    Routes.profile,
+                                  );
                                   _loadProfiles(); // Refresh after returning from profile management
                                 },
                                 child: const Text('Manage Profiles'),
@@ -275,7 +283,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.pushNamed(context, Routes.profileCreate);
+          final result = await Navigator.pushNamed(
+            context,
+            Routes.profileCreate,
+          );
           if (result == true) {
             _loadProfiles(); // Refresh the profile list
           }

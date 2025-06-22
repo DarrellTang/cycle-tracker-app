@@ -4,7 +4,7 @@ import 'package:cycle_tracker_app/domain/repositories/profile_repository.dart';
 /// In-memory implementation of ProfileRepository for web fallback
 class ProfileRepositoryMemory implements ProfileRepository {
   static final List<Profile> _profiles = [];
-  
+
   @override
   Future<List<Profile>> getAllProfiles() async {
     // Simulate network delay
@@ -49,8 +49,9 @@ class ProfileRepositoryMemory implements ProfileRepository {
   Future<List<Profile>> searchProfiles(String query) async {
     await Future.delayed(const Duration(milliseconds: 100));
     return _profiles
-        .where((profile) => 
-            profile.name.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (profile) => profile.name.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 }

@@ -15,9 +15,12 @@ class EncryptionService {
   late final encrypt.Key _key;
   static const String _keyStorageKey = 'cycle_tracker_encryption_key';
   static const String _ivStorageKey = 'cycle_tracker_encryption_iv';
+  bool _isInitialized = false;
 
   /// Initialize the encryption service
   Future<void> initialize() async {
+    if (_isInitialized) return; // Prevent double initialization
+
     final prefs = await SharedPreferences.getInstance();
 
     // Get or generate encryption key
@@ -31,6 +34,7 @@ class EncryptionService {
     }
 
     _encrypter = encrypt.Encrypter(encrypt.AES(_key));
+    _isInitialized = true;
   }
 
   /// Encrypt a string value

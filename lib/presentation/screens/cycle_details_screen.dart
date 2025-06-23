@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:cycle_tracker_app/domain/entities/profile.dart';
 import 'package:cycle_tracker_app/domain/entities/cycle_record.dart';
 import 'package:cycle_tracker_app/presentation/screens/period_logging_screen.dart';
+import 'package:cycle_tracker_app/presentation/screens/cycle_history_screen.dart';
 import 'package:cycle_tracker_app/core/services/cycle_calculation_service.dart';
 
 /// Screen for displaying cycle details with calendar view
@@ -771,19 +772,12 @@ class _CycleDetailsScreenState extends ConsumerState<CycleDetailsScreen> {
   }
 
   void _showCycleHistory() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cycle History'),
-        content: const Text(
-          'Cycle history visualization will be implemented in subtask 4.5.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
+    if (widget.profile == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CycleHistoryScreen(profile: widget.profile!),
       ),
     );
   }

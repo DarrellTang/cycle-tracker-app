@@ -66,20 +66,22 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
       final cycleLength = 26 + (i % 6); // Vary between 26-31 days
       final periodLength = 3 + (i % 3); // Vary between 3-5 days
 
-      cycles.add(CycleRecord(
-        id: 'cycle_$i',
-        profileId: widget.profile.id,
-        startDate: startDate,
-        endDate: startDate.add(Duration(days: periodLength - 1)),
-        cycleLength: cycleLength,
-        periodLength: periodLength,
-        currentPhase: CyclePhase.menstrual,
-        flowIntensity: 2 + (i % 3), // Vary between 2-4
-        createdAt: startDate,
-        updatedAt: startDate.add(Duration(days: periodLength)),
-        symptoms: _generateSampleSymptoms(i),
-        notes: i % 3 == 0 ? 'Sample notes for cycle ${i + 1}' : null,
-      ));
+      cycles.add(
+        CycleRecord(
+          id: 'cycle_$i',
+          profileId: widget.profile.id,
+          startDate: startDate,
+          endDate: startDate.add(Duration(days: periodLength - 1)),
+          cycleLength: cycleLength,
+          periodLength: periodLength,
+          currentPhase: CyclePhase.menstrual,
+          flowIntensity: 2 + (i % 3), // Vary between 2-4
+          createdAt: startDate,
+          updatedAt: startDate.add(Duration(days: periodLength)),
+          symptoms: _generateSampleSymptoms(i),
+          notes: i % 3 == 0 ? 'Sample notes for cycle ${i + 1}' : null,
+        ),
+      );
     }
 
     return cycles.reversed.toList(); // Most recent first
@@ -94,7 +96,7 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
       'Fatigue',
       'Backache',
       'Breast tenderness',
-      'Nausea'
+      'Nausea',
     ];
 
     // Vary symptoms per cycle
@@ -183,16 +185,16 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               description,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
             SizedBox(height: 200, child: chart),
@@ -251,9 +253,12 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
               reservedSize: 40,
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(
           show: true,
@@ -330,9 +335,12 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
               reservedSize: 40,
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(
           show: true,
@@ -496,9 +504,8 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: (symptomCounts.values
-                .reduce((a, b) => a > b ? a : b)
-                .toDouble() *
+        maxY:
+            (symptomCounts.values.reduce((a, b) => a > b ? a : b).toDouble() *
             1.2),
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
@@ -529,9 +536,12 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
               interval: 1,
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: false),
         barGroups: barGroups,
@@ -549,36 +559,41 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
       child: Column(
         children: [
           // Overview Statistics
-          _buildStatisticsCard(
-            'Cycle Overview',
-            [
-              _buildStatRow('Total Cycles Tracked',
-                  '${_cycleStatistics!.totalCycles}'),
-              _buildStatRow('Average Cycle Length',
-                  '${_cycleStatistics!.averageCycleLength} days'),
-              _buildStatRow('Average Period Length',
-                  '${_cycleStatistics!.averagePeriodLength} days'),
-              _buildStatRow('Cycle Variability',
-                  '${_cycleStatistics!.cycleVariability.toStringAsFixed(1)} days'),
-            ],
-          ),
+          _buildStatisticsCard('Cycle Overview', [
+            _buildStatRow(
+              'Total Cycles Tracked',
+              '${_cycleStatistics!.totalCycles}',
+            ),
+            _buildStatRow(
+              'Average Cycle Length',
+              '${_cycleStatistics!.averageCycleLength} days',
+            ),
+            _buildStatRow(
+              'Average Period Length',
+              '${_cycleStatistics!.averagePeriodLength} days',
+            ),
+            _buildStatRow(
+              'Cycle Variability',
+              '${_cycleStatistics!.cycleVariability.toStringAsFixed(1)} days',
+            ),
+          ]),
 
           const SizedBox(height: 16),
 
           // Predictions
-          _buildStatisticsCard(
-            'Predictions',
-            [
-              if (_cycleStatistics!.lastPeriodDate != null)
-                _buildStatRow('Last Period',
-                    _formatDate(_cycleStatistics!.lastPeriodDate!)),
-              if (_cycleStatistics!.nextPredictedPeriod != null)
-                _buildStatRow('Next Predicted Period',
-                    _formatDate(_cycleStatistics!.nextPredictedPeriod!)),
+          _buildStatisticsCard('Predictions', [
+            if (_cycleStatistics!.lastPeriodDate != null)
               _buildStatRow(
-                  'Days Until Next Period', _getDaysUntilNextPeriod()),
-            ],
-          ),
+                'Last Period',
+                _formatDate(_cycleStatistics!.lastPeriodDate!),
+              ),
+            if (_cycleStatistics!.nextPredictedPeriod != null)
+              _buildStatRow(
+                'Next Predicted Period',
+                _formatDate(_cycleStatistics!.nextPredictedPeriod!),
+              ),
+            _buildStatRow('Days Until Next Period', _getDaysUntilNextPeriod()),
+          ]),
 
           const SizedBox(height: 16),
 
@@ -603,9 +618,9 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...children,
@@ -622,10 +637,7 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -653,16 +665,14 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
         .reduce((a, b) => a.value > b.value ? a : b)
         .key;
 
-    return _buildStatisticsCard(
-      'Flow Patterns',
-      [
-        _buildStatRow('Average Flow Intensity', avgIntensity),
-        _buildStatRow('Most Common Flow', mostCommonFlow),
-        const SizedBox(height: 8),
-        ...flowCounts.entries.map((entry) =>
-            _buildStatRow('${entry.key} Flow', '${entry.value} cycles')),
-      ],
-    );
+    return _buildStatisticsCard('Flow Patterns', [
+      _buildStatRow('Average Flow Intensity', avgIntensity),
+      _buildStatRow('Most Common Flow', mostCommonFlow),
+      const SizedBox(height: 8),
+      ...flowCounts.entries.map(
+        (entry) => _buildStatRow('${entry.key} Flow', '${entry.value} cycles'),
+      ),
+    ]);
   }
 
   Widget _buildSymptomStatistics() {
@@ -676,10 +686,9 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
     }
 
     if (symptomCounts.isEmpty) {
-      return _buildStatisticsCard(
-        'Symptom Analysis',
-        [const Text('No symptom data available')],
-      );
+      return _buildStatisticsCard('Symptom Analysis', [
+        const Text('No symptom data available'),
+      ]);
     }
 
     final topSymptoms = symptomCounts.entries.toList()
@@ -689,8 +698,12 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
     return _buildStatisticsCard(
       'Top Symptoms',
       topSymptoms
-          .map((entry) => _buildStatRow(
-              entry.key, '${entry.value}/${_cycleHistory.length} cycles'))
+          .map(
+            (entry) => _buildStatRow(
+              entry.key,
+              '${entry.value}/${_cycleHistory.length} cycles',
+            ),
+          )
           .toList(),
     );
   }
@@ -731,11 +744,17 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildCycleDetail(
-                        'Cycle Length', '${cycle.cycleLength ?? "N/A"} days'),
+                      'Cycle Length',
+                      '${cycle.cycleLength ?? "N/A"} days',
+                    ),
                     _buildCycleDetail(
-                        'Period Length', '${cycle.periodLength ?? "N/A"} days'),
-                    _buildCycleDetail('Flow Intensity',
-                        _getFlowIntensityLabel(cycle.flowIntensity ?? 3)),
+                      'Period Length',
+                      '${cycle.periodLength ?? "N/A"} days',
+                    ),
+                    _buildCycleDetail(
+                      'Flow Intensity',
+                      _getFlowIntensityLabel(cycle.flowIntensity ?? 3),
+                    ),
                   ],
                 ),
                 if (cycle.symptoms != null && cycle.symptoms!.isNotEmpty) ...[
@@ -749,20 +768,19 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
                     spacing: 8,
                     runSpacing: 4,
                     children: cycle.symptoms!
-                        .map((symptom) => Chip(
-                              label: Text(symptom),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ))
+                        .map(
+                          (symptom) => Chip(
+                            label: Text(symptom),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        )
                         .toList(),
                   ),
                 ],
                 if (cycle.notes != null && cycle.notes!.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  Text(
-                    'Notes:',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
+                  Text('Notes:', style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 4),
                   Text(cycle.notes!),
                 ],
@@ -779,18 +797,9 @@ class _CycleHistoryScreenState extends ConsumerState<CycleHistoryScreen>
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }

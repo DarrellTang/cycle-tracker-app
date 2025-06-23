@@ -4,6 +4,7 @@ import 'package:cycle_tracker_app/presentation/screens/home_screen.dart';
 import 'package:cycle_tracker_app/presentation/screens/not_found_screen.dart';
 import 'package:cycle_tracker_app/presentation/screens/profile_list_screen.dart';
 import 'package:cycle_tracker_app/presentation/screens/profile_edit_screen.dart';
+import 'package:cycle_tracker_app/presentation/screens/cycle_details_screen.dart';
 
 /// Route names constants
 class Routes {
@@ -44,10 +45,11 @@ class AppRouter {
           settings: settings,
         );
       case Routes.cycleDetails:
+        // Extract profile from arguments if provided
+        final profile = settings.arguments;
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Cycle Details Screen - Coming Soon')),
-          ),
+          builder: (_) =>
+              CycleDetailsScreen(profile: profile is Profile ? profile : null),
           settings: settings,
         );
       case Routes.settings:
